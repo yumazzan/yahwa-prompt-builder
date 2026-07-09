@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야화기방 — 프롬프트 조립기 v3</title>
+<style>
+  :root{
+    --ink:#1a1720; --ink-soft:#3a3340; --card:#fbf8f4; --line:#d9cfc4;
+    --plum:#6b4a5e; --plum-soft:#8a6a7d; --gold:#a8895f; --accent:#7a5c6d;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:"Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;
+    background:linear-gradient(160deg,#efe7de,#e7ddd4); color:var(--ink); padding:24px; line-height:1.6;}
+  .wrap{max-width:980px; margin:0 auto;}
+  h1{font-size:22px; margin:0 0 4px;}
+  .sub{color:var(--plum-soft); font-size:13px; margin:0 0 20px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(60,40,50,.05);}
+  .card h2{font-size:14px; margin:0 0 12px; color:var(--plum);
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .badge{font-size:10px; padding:2px 8px; border-radius:20px; font-weight:600; background:var(--plum); color:#fff;}
+  .badge.fixed{background:var(--ink-soft);} .badge.var{background:var(--gold);}
+  label{font-size:12px; color:var(--ink-soft); display:block; margin:10px 0 4px; font-weight:600;}
+  input[type=text], textarea{width:100%; border:1px solid var(--line); border-radius:8px; padding:9px 12px;
+    font-size:12.5px; font-family:inherit; color:var(--ink); background:#fff; line-height:1.55;}
+  textarea{resize:vertical;} input:focus,textarea:focus{outline:none; border-color:var(--plum-soft);}
+  .row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+  .chip{padding:6px 13px; border:1px solid var(--line); border-radius:20px; background:#fff;
+    font-size:12px; cursor:pointer; transition:.15s; user-select:none;}
+  .chip:hover{border-color:var(--plum-soft);} .chip.on{background:var(--plum); color:#fff; border-color:var(--plum);}
+  .chip.char{padding:8px 14px;} .chip.add{border-style:dashed; color:var(--gold);}
+  .hint{font-size:11px; color:var(--plum-soft); margin:2px 0 0;}
+  .out{background:var(--ink); color:#e8e0d6; border-radius:14px; padding:18px 20px; font-size:12px;
+    line-height:1.7; white-space:pre-wrap; word-break:break-word; font-family:"SF Mono",Menlo,monospace;
+    max-height:320px; overflow:auto;}
+  .outbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px;}
+  .stat{font-size:11px; color:var(--plum-soft);}
+  button.act{background:var(--plum); color:#fff; border:none; border-radius:8px; padding:8px 15px;
+    font-size:12.5px; font-weight:600; cursor:pointer; transition:.15s;}
+  button.act:hover{background:var(--accent);} button.ghost{background:transparent; color:var(--plum); border:1px solid var(--plum);}
+  button.mini{font-size:11px; padding:5px 10px;}
+  .toggle{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; cursor:pointer;}
+  .foot{font-size:11px; color:var(--plum-soft); text-align:center; margin-top:18px;}
+  .savebar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;}
+  .costName{font-size:11px; color:var(--gold); font-weight:700; margin-top:8px;}
+  .del{color:#a55; font-size:11px; cursor:pointer; margin-left:auto;}
+  .savedmark{font-size:10px; color:var(--jade,#5f7d6f); margin-left:6px;}
+  details.log{margin-top:10px;}
+  details.log summary{font-size:11px; color:var(--gold); cursor:pointer; font-weight:700;}
+  .logbox{background:#f5efe8; border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+    margin-top:6px; max-height:150px; overflow:auto; font-size:10.5px; color:var(--ink-soft);}
+  .logrow{padding:3px 0; border-bottom:1px dashed #e0d6ca;}
+  .logrow:last-child{border:none;}
+  .logtime{color:var(--plum-soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>야화기방 — 프롬프트 조립기 v14 🌙</h1>
+  <p class="sub">구도·포즈를 프롬프트 맨 앞에 배치(정면/측면·가중치) · 눈동자·체형 · 갓/상투 · 저장+로그</p>
+
+  <!-- STYLE FIXED (이제 저장됨) -->
+  <div class="card">
+    <h2><span class="badge fixed">고정</span> ① 그림체 · 조명 · 색 (module A) <span class="savedmark" id="styleSaved"></span></h2>
+    <p class="hint">웹툰 잉크선 + 가벼운 채색 + 체온감. 수정 후 "저장"을 누르면 최신본으로 남고, 아래에 로그가 쌓입니다.</p>
+    <textarea id="styleBox" rows="8"></textarea>
+    <div class="savebar">
+      <button class="act mini" onclick="saveStyle()">그림체 저장</button>
+      <button class="act ghost mini" onclick="resetStyle()">기본값으로 되돌리기</button>
+    </div>
+    <details class="log">
+      <summary>수정 로그 보기</summary>
+      <div class="logbox" id="styleLog"></div>
+    </details>
+  </div>
+
+  <!-- CHARACTER -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ② 캐릭터 <span id="curName" style="color:var(--gold);"></span> <span class="savedmark" id="charSaved"></span></h2>
+    <div class="row" id="charChips"></div>
+    <label>캐릭터 이름</label>
+    <input type="text" id="nameBox" placeholder="예: 하진 (명리)">
+    <label>담당 술수 · 성격 메모 <span class="hint" style="display:inline">(프롬프트엔 안 들어감)</span></label>
+    <input type="text" id="memoBox" placeholder="예: 명리 담당 / 여유·자신감·은근한 밀당">
+    <label>얼굴 · 헤어</label>
+    <textarea id="faceBox" rows="5"></textarea>
+    <div class="savebar">
+      <button class="act mini" onclick="saveChar()">이 캐릭터 저장</button>
+      <button class="act ghost mini" onclick="addChar()">+ 새 캐릭터</button>
+      <span class="del" id="delBtn" onclick="delChar()">이 캐릭터 삭제</span>
+    </div>
+    <details class="log">
+      <summary>캐릭터 수정 로그 보기</summary>
+      <div class="logbox" id="charLog"></div>
+    </details>
+  </div>
+
+  <!-- HAIR -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ②-2 헤어 <span class="hint" style="display:inline">(상황별 교체 · 직접 작성 가능)</span></h2>
+    <div class="row" id="hairChips"></div>
+    <textarea id="hairBox" rows="2" placeholder="헤어 선택 또는 직접 작성"></textarea>
+  </div>
+
+  <!-- BODY -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ②-3 체형 <span class="hint" style="display:inline">(캐릭터별 교체 · 직접 작성 가능)</span></h2>
+    <div class="row" id="bodyChips"></div>
+    <textarea id="bodyBox" rows="2" placeholder="체형 선택 또는 직접 작성"></textarea>
+  </div>
+
+  <!-- COSTUME -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ③ 의상 <span class="hint" style="display:inline">(레퍼런스 기반 질감·실루엣 강화)</span></h2>
+    <div class="row" id="costChips"></div>
+    <div class="costName" id="costName"></div>
+    <textarea id="costumeBox" rows="7"></textarea>
+  </div>
+
+  <!-- ACCESSORY / OBJECT -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ③-2 액세서리 · 오브제 <span class="hint" style="display:inline">(여러 개 선택 가능 · 직접 추가 가능)</span></h2>
+    <div class="row" id="accChips"></div>
+    <textarea id="accBox" rows="3" placeholder="선택하거나 직접 작성 (예: 붉은 댕기 늘어진 전모를 든 손)"></textarea>
+  </div>
+
+  <!-- SCENE -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ④ 포즈 · 배경 · 구도</h2>
+    <label>포즈</label>
+    <div class="row" id="poseChips"></div>
+    <textarea id="poseBox" rows="2"></textarea>
+    <label>배경 · 장면</label>
+    <div class="row" id="bgChips"></div>
+    <textarea id="bgBox" rows="2"></textarea>
+    <label>구도</label>
+    <div class="row" id="compChips"></div>
+    <textarea id="compBox" rows="2"></textarea>
+    <label>이미지 비율 <span class="hint" style="display:inline">(SD의 Width×Height에 맞춰 설정)</span></label>
+    <div class="row" id="ratioChips"></div>
+    <textarea id="ratioBox" rows="1"></textarea>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <div class="outbar">
+      <h2 style="margin:0;"><span class="badge">출력</span> ⑤ 최종 프롬프트</h2>
+      <label class="toggle"><input type="checkbox" id="dedup" checked> 중복 문구 자동 제거</label>
+    </div>
+    <div class="row" style="margin-bottom:10px;">
+      <div class="chip" id="ord-style" onclick="setOrder('style')">🎨 그림체 우선 (나노바나나·Gemini·범용)</div>
+      <div class="chip" id="ord-comp" onclick="setOrder('comp')">📐 구도 우선 (SeaArt·SDXL·Flux)</div>
+    </div>
+    <div class="out" id="output"></div>
+    <div class="outbar" style="margin-top:12px;">
+      <span class="stat" id="stat"></span>
+      <button class="act" id="copyBtn" onclick="copyOut()">복사</button>
+    </div>
+    <label style="margin-top:14px;">네거티브 프롬프트 <span class="hint" style="display:inline">(SeaArt의 네거티브 칸에 붙여넣기)</span></label>
+    <div class="out" id="negOutput" style="max-height:none; font-size:11px;">lowres, bad anatomy, bad hands, bad proportions, long neck, elongated neck, swan neck, extra long neck, deformed neck, worst quality, low quality, blurry, realistic, photorealistic, 3d render, deformed, extra fingers, profile view, side view, from behind, multiple views</div>
+    <div class="outbar" style="margin-top:8px;">
+      <span class="stat" style="color:var(--plum-soft); font-size:11px;">목 길게 나올 때 · 옆모습 방지에 효과적</span>
+      <button class="act ghost mini" id="negCopyBtn" onclick="copyNeg()">네거티브 복사</button>
+    </div>
+
+    <label style="margin-top:16px;">통합본 <span class="hint" style="display:inline">(프롬프트 + 네거티브 한 번에 · 네거티브 칸이 없는 툴용)</span></label>
+    <div class="out" id="fullOutput" style="max-height:220px; font-size:11px;"></div>
+    <div class="outbar" style="margin-top:8px;">
+      <span class="stat" style="color:var(--plum-soft); font-size:11px;">Negative prompt: 형식으로 합쳐집니다</span>
+      <button class="act" id="fullCopyBtn" onclick="copyFull()">통합본 복사</button>
+    </div>
+  </div>
+
+  <p class="foot">모든 저장은 이 브라우저에 남습니다 · 그림체/캐릭터는 항상 마지막 저장본으로 복원됩니다 🌙</p>
+</div>
+
+<script>
+// ===== 기본 그림체 =====
+const DEFAULT_STYLE =
+`Premium Korean BL editorial manhwa illustration, semi-realistic Korean romance manhwa with refined editorial finish — elegant drawing over painterly rendering, a premium historical BL cover, not commercial anime.
+LINE & SHADING ROLE-SPLIT (core): facial form is sculpted by light and shadow, but eyes, brows, jawline and lips are locked with clean confident charcoal-ink lines — thin on the eyes, minimal on nose and lips, slightly thicker on the jaw, almost none at skin boundaries. Coloring supports the linework, never covers it. Charcoal ink, not pure black.
+RENDERING: 70% webtoon cel-paint + 30% watercolor — soft editorial cel shading with subtle oriental watercolor blending, layered color glazing, facial structure always preserved.
+DIMENSION & SHADOW (important): rich dimensional modeling — clear soft shadows carving the cheekbones, nose bridge, eye sockets, jaw, neck and collarbone, with defined planes and depth. Confident light-to-shadow gradients give a sculpted three-dimensional face and body. Warm ambient occlusion in the folds and under the jaw. Never flat, never evenly lit — but transitions stay smooth and feathered, not harsh.
+SKIN FINISH: matte, smooth, never glossy — soft subsurface glow, dimensional shading (skin color and blush defined per character).
+LIGHTING: warm cinematic diffusion — late-afternoon or candle light through a hanji window, soft directional key light modeling the form, warm bounced fill, gentle falloff into shadow.
+FABRIC (signature): premium Korean silk layered with sheer translucent black organza — genuinely see-through, faintly revealing skin and inner layers, embroidery floating on the transparent fabric, multiple overlapping translucent layers with real depth, heavy silk draping and gravity folds. Never flat opaque fabric.
+COLOR: muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige.
+TEXTURE: barely-there hanji grain and fine premium film grain over the whole image.
+MOOD: quiet luxury, restrained, intimate, historical, poetic, emotionally immersive.
+Avoid: flat even lighting, dissolved linework, oil/airbrush look, harsh contrast, HDR, dramatic rim light, neon, manga screentones.`;
+
+// ===== 의상 10종 (레퍼런스 기반 질감·실루엣 강화) =====
+const COSTUMES = {
+  "01 월광(月光)":
+`STYLE Wolgwang — restrained sensuality. A sheer translucent black organza jeogori so fine the skin tone shows faintly through, worn over an ivory silk inner layer. Deep V-collar exposing only the collarbone, the fabric hazing the chest contour rather than baring it. Fine antique-gold plum-blossom and cloud embroidery threading the sheer silk. Long wide flowing sleeves with real silk weight. A slightly cinched waist with a jade norigae pendant on gold-thread tassels at the hip. Silhouette: long, vertical, elegant. Palette: navy, ink-black, ivory, gold thread.`,
+  "02 홍련(紅蓮)":
+`STYLE Hongryeon — masculine corset hanbok. A Joseon heungbae-inspired silk wrap band binds the chest like a structured bandeau in deep crimson with gold embroidery, worn under a fully sheer black organza jeogori. Very deep neckline, firm masculine chest line showing through the sheer layer, back almost fully open. A wide black leather-silk sash with jade ornaments and Joseon-style gold chain draping at the hip. Silhouette: broad shoulders, defined torso, dramatic. Palette: crimson, ink-black, plum, gold thread, jade.`,
+  "03 난설(蘭雪)":
+`STYLE Nanseol — off-shoulder hanbok. One side of the jeogori slips fully off the shoulder in a relaxed drape, baring one shoulder, collarbone and neckline in a long elegant line, a thin ivory silk inner beneath. Very long trailing sleeves that flow with movement. Orchid embroidery and snow-flower motifs in silver-white on translucent silk. A wide sash knotted low. Silhouette: fluid, diagonal, graceful. Palette: ivory, soft grey-blue, navy, gold, jade.`,
+  "04 야화(夜花)":
+`STYLE Yahwa — gisaeng meets Saint Laurent. An all-black modern hanbok with a deep silk-shirt collar plunging low, slim tailored trousers, a black leather-silk belt, a black Joseon fabric choker at the throat, a single drop earring. Matte silk with subtle peony jacquard, fine gold-thread and black-chain detailing. Silhouette: sharp, minimal, masculine, contemporary. Palette: pure black, ink, gold thread accents.`,
+  "05 청월(靑月)":
+`STYLE Cheongwol — royal gisaeng. A pure white-and-ivory silk hanbok with very wide dancing sleeves, deep collar, waist tied with a sash, hair in a neat topknot. Gold-thread phoenix and cloud embroidery, jade ornaments and gold tassels. Refined, regal, minimal exposure, luminous. Silhouette: flowing, majestic, ceremonial. Palette: white, ivory, gold, jade.`,
+  "06 은밀(隱密)":
+`STYLE Eunmil — sheer AI-host aesthetic. An ultra-thin sheer black organza garment, translucent but with silk motifs woven so key areas stay covered. Gold-leaf and lattice-window (changho) patterning, subtle embroidery that shimmers and shifts as light hits the silk. Mother-of-pearl and gold ornaments. Silhouette: layered transparency, luminous. Palette: ink-black, gold leaf, jade.`,
+  "07 야월(夜月) ★메인":
+`Yahwa Gibang signature outfit (Yawol) — a Saint Laurent-inspired masculine reinterpretation of Joseon male gisaeng attire. OUTER: a very fine semi-transparent black organza jeogori, skin tone hazing faintly through, front panel embroidered with grey ink-line plum blossoms and clouds in a black-and-grey palette, so texture and layering replace direct exposure. INNER: minimal and open — the deep V-neckline opens low to reveal the bare collarbone, sternum and upper chest directly, no high closed ivory layer blocking the neck, only a loose thin silk band crossing softly low on the torso. The sheer translucent black organza outer drapes open over the bare skin, plum-blossom and cloud embroidery floating on the see-through fabric so the chest shows faintly through the sheer layers. One shoulder slips slightly off in relaxed runway styling. Broad structured shoulders taper to a slim waist for a long inverted-triangle silhouette. Wide flowing sleeves fall like water, organza catching and diffusing light. A wide black silk sash with silver-grey ornaments and gold-thread tassels. A slim black silk choker, a thin delicate band wrapped closely around the neck, minimal and clean with no pendant hanging from it. A single asymmetric silver-and-gold earring, slender dark metal rings. Palette: ink-black, charcoal grey, silver-grey patterns, off-white, champagne gold.`,
+  "08 현루(玄樓)":
+`STYLE Hyeonru — trustworthy refined luxury. A deep V-collar black jeogori with restrained antique-gold embroidery along sleeves and collar, worn over a crisp white inner collar, slim tailored black trousers, a wide gold-toned sash defining the waist. Matte silk with subtle sheen, controlled exposure, dignified and expensive. Silhouette: structured, vertical, composed. Palette: ink-black, white, gold, jade.`,
+  "09 자운(紫雲)":
+`STYLE Jaun — mysterious flirtation. A short purple silk jeogori over a sheer layer, both arms bare, deep V-neckline, high side slits with layered flowing panels, gold knot ornaments and dangling ties. Fabric flows and lifts with movement, mystical and seductive but elegant. Silhouette: airy, revealing yet graceful. Palette: royal purple, plum, ink, gold, jade.`,
+  "10 홍월(紅月)":
+`STYLE Hongwol — dangerous allure at its peak. A crimson-red short jeogori over a sheer inner, arms bare, maximal yet elegant exposure, a bold deep V-collar, high side slits, ornate gold embroidery, a black sash for sharp contrast, ornate dangling hairpiece. Seductive and intense, never vulgar, held by refined tailoring. Silhouette: bold, sculpted, magnetic. Palette: crimson, ink-black, gold, garnet.`
+};
+
+// ===== 씬 프리셋 =====
+const POSES = {
+  "정면·손 턱":"front-facing, one hand resting gracefully near the chin, calm confident direct gaze",
+  "공손한 인사":"bowing gracefully in greeting at the doorway, both hands folded in front, head slightly lowered, elegant welcoming gesture",
+  "나른한 옆모습":"three-quarter view, head slightly lowered, languid downward gaze, hair falling across the face",
+  "부채 든 포즈":"holding a folding fan half-open near the chest, elegant restrained posture",
+  "돌아보는 순간":"glancing back over the shoulder, subtle knowing look",
+  "차 따르는 손":"pouring tea with graceful long fingers, gaze softly downward",
+  "기대어 앉음":"reclining elegantly against a low armrest, relaxed languid posture"
+};
+const BGS = {
+  "기방 사랑방":"quiet dim Joseon gibang interior, wooden lattice, folding screen, faint hanji window glow, blurred soft depth",
+  "기방 문 앞·분홍 커튼":"standing at the entrance of the gibang, translucent pink organza curtains draped at the doorway parting softly, warm interior glow spilling from behind, intimate welcoming atmosphere",
+  "촛불·향":"candlelight and thin drifting incense smoke, warm low-key intimate atmosphere",
+  "달빛 창가":"soft moonlight through a hanji window, cool light blended with warm candle glow",
+  "분홍 오간자 커튼":"translucent pink organza curtains gently diffusing the air, dreamy depth",
+  "매화 병풍":"a plum-blossom folding screen behind, muted warm tones, subtle depth",
+  "여백 배경":"minimal softly blurred warm background, focus fully on the figure"
+};
+const COMPS = {
+  "가슴 위·정면":"(front view, facing the viewer:1.3), chest-up portrait, centered, only upper chest visible",
+  "상반신·정면":"(front view, facing the viewer:1.3), upper-body composition, waist-up, centered",
+  "골반 위·정면":"(front view, facing the viewer:1.3), hip-up composition, upper body down to the hips, showing the sash and waistline, centered",
+  "무릎 위·정면":"(front view, facing the viewer:1.3), knee-up composition, three-quarter body from head to knees, centered",
+  "전신·정면":"(front view, facing the viewer:1.3), full-body elegant standing composition, centered",
+  "3/4 측면":"(three-quarter view:1.2), upper body, face turned slightly, elegant angle",
+  "옆모습":"(profile side view:1.2), upper body, graceful profile",
+  "클로즈업·정면":"(front view:1.3), face close-up, intimate framing",
+  "가로 와이드":"wide horizontal landscape composition, (front view:1.2), upper body with negative space around the figure for a background scene, cinematic banner framing"
+};
+
+// ===== 이미지 비율 (SDXL 권장 해상도 포함) =====
+const RATIOS = {
+  "9:16 세로 (앱/스토리 · 896×1600)":"vertical 9:16 aspect ratio, tall portrait format",
+  "4:5 세로 (피드 · 1024×1280)":"4:5 aspect ratio, portrait format",
+  "1:1 정방형 (썸네일 · 1024×1024)":"1:1 square aspect ratio, centered composition",
+  "16:9 가로 (배너/배경 · 1600×896)":"wide 16:9 aspect ratio, horizontal landscape format",
+  "3:4 세로 (일러스트 · 896×1216)":"3:4 aspect ratio, portrait format"
+};
+
+// ===== 헤어 프리셋 (상황별 교체) =====
+// ===== 체형 프리셋 =====
+const BODYTYPES = {
+  "넓은 직각어깨·슬림근육 ★기본":"broad straight square shoulders, a lean athletic build with subtle defined muscle, a slim narrow waist, long elegant proportions with a natural well-proportioned neck (not overly long), an inverted-triangle silhouette — masculine and refined",
+  "가늘고 우아한":"a slender graceful build, delicate frame, long limbs, soft elegant lines, refined and lithe",
+  "탄탄한 근육질":"a fit muscular build with clearly defined chest and arms, strong masculine physique, broad shoulders",
+  "훤칠하고 마른":"tall and slim, lean lanky build, long neck and limbs, understated elegance"
+};
+
+const HAIRS = {
+  "반묶음 장발 ★기본":"grey-black hair half up in a loose Joseon topknot, the rest falling long and silky down the back and framing the face, a few strands drifting over the cheek — refined yet sensual, the signature look",
+  "상투+비녀":"grey-black hair in a neat traditional Joseon topknot, secured with a LONG ornate traditional Korean binyeo hairpin — a slender jade-and-gold pin roughly 18-20cm long that passes fully through the topknot and extends well beyond both sides in a clear horizontal line, its decorated ends (jade cap, plum or crane motif) clearly visible protruding from each side. Clean and dignified, forehead and neckline exposed.",
+  "완전 장발":"long loose grey-black hair falling freely down past the shoulders, silky and heavy, a few strands across the face, languid and seductive",
+  "상투관+비녀":"grey-black hair in a Joseon topknot held by a small ornate topknot crown (sangtugwan / manggeon band) around the base, with a LONG slender jade-and-gold binyeo pin passing horizontally all the way through and extending clearly beyond both sides, decorated ends visible. Aristocratic and refined.",
+  "낮게 묶은 머리":"grey-black hair tied low at the nape with a silk ribbon, a few loose strands framing the face, understated and elegant",
+  "흐트러진 반묶음":"grey-black hair in a loosened half-up topknot with strands escaping softly, slightly undone and intimate"
+};
+
+// ===== 액세서리 · 오브제 프리셋 =====
+const ACCESSORIES = {
+  "전모(氈帽)":"holding aloft a jeonmo — a traditional Joseon gisaeng hat with a VERY WIDE broad round semi-transparent brim where the fine bamboo lattice frame shows through, decorated with delicate gold-line geometric lattice patterns, small plum-blossom and floral ornaments dotted along the brim edge, black silk cords tying under the chin, an ink-black and antique-gold palette, elegant and translucent, held gracefully with one hand",
+  "쓴 전모":"wearing a jeonmo — a Joseon hat with a VERY WIDE broad round semi-transparent brim showing the fine bamboo lattice through it, gold-line geometric patterns, plum-blossom ornaments along the edge, black silk cords tied under the chin, ink-black and gold tones, casting a soft delicate shadow over the eyes",
+  "접선 부채":"holding a folding fan (jeopseon) with an ink-painting of plum blossoms, half-open near the face",
+  "옥 노리개":"an ornate jade norigae hanging from the sash — jade beads, gold-thread tassels, silk knots",
+  "장죽 담뱃대":"holding a long slender Joseon smoking pipe (jangjuk) with a brass bowl, languid gesture",
+  "붉은 댕기":"long crimson silk daenggi ribbons woven into the hair, trailing down",
+  "옥 반지·귀걸이":"slender jade rings and a single asymmetric jade-and-gold earring",
+  "갓 (넓은 챙)":"wearing a traditional black gat — a Joseon horsehair hat with a WIDE broad brim (generously wide, not narrow), the semi-transparent brim casting a soft shadow, elegant and refined",
+  "갓 + 반투명 베일":"wearing a translucent black gat with a WIDE broad brim and a fine sheer silk veil draping from the brim, softly veiling and shadowing the face, mysterious and elegant",
+  "상투 (동곳)":"hair worn up in a traditional Joseon topknot fixed with a small ornate topknot pin (donggot), no hat, exposed hair and forehead, clean and dignified",
+  "갓끈 비즈 목걸이":"a long delicate gatgeun bead necklace — a fine thin string of tiny black seed beads, irregularly interspersed with occasional larger beads (black onyx, clear crystal, dark hematite with metallic sheen), centered on a single raw uncut pale rose-quartz crystal as the focal pendant, with a small silver toggle clasp. Long and slender, layering loosely down the bare chest — a modern minimal styling of a Joseon beaded cord",
+  "매화 가지":"holding a single plum blossom branch, delicate and poetic"
+};
+
+// ===== 기본 캐릭터 =====
+const SEED_CHARS = {
+  "하진 (명리)":{memo:"명리 담당 / 기방 마스코트 / 달빛 그레이 눈 + 붉은 눈가 / 서늘함+다정함", face:
+`A young East Asian man, the mascot of Yahwa Gibang — a face blending cool aristocratic mystery with gentle warmth. Refined elegant features: long vertical face, smooth narrow jawline, small V-chin, broad calm forehead, low subtle cheekbones. Narrow long almond eyes, half-lidded and languid, sharp clean inner corners with a faint outer lift. SIGNATURE: medium-toned dark grey irises, deep smoky charcoal-grey eyes with a soft muted sheen, not pale or silver — mysterious and cool. Soft red-tinged eye makeup — a delicate crimson flush along the outer eye corners and lids, sensual and striking against the grey eyes. Straight dark brows with soft taper, long slim nose with a small neat tip, medium-small mouth with a thin M-curved upper lip and slightly fuller lower lip. A composed, quietly confident expression carrying both cool distance and a trace of gentle warmth. Grey-black hair color. Warm porcelain skin with ivory base, soft peach undertones and a faint rose flush on the cheeks and ears.`}
+};
+
+// ===== 저장 =====
+const LS_CHARS="yahwa_chars_v14", LS_STYLE="yahwa_style_v14", LS_STYLELOG="yahwa_stylelog_v14", LS_CHARLOG="yahwa_charlog_v14";
+let chars = loadJSON(LS_CHARS, JSON.parse(JSON.stringify(SEED_CHARS)));
+let cur = Object.keys(chars)[0];
+let savedStyle = loadStr(LS_STYLE, DEFAULT_STYLE);
+let styleLog = loadJSON(LS_STYLELOG, []);
+let charLog = loadJSON(LS_CHARLOG, []);
+
+function loadJSON(k,d){try{const s=localStorage.getItem(k); if(s) return JSON.parse(s);}catch(e){} return d;}
+function loadStr(k,d){try{const s=localStorage.getItem(k); if(s!==null) return s;}catch(e){} return d;}
+function saveJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function saveStr(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function now(){const d=new Date(); return d.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
+function snippet(t){t=t.replace(/\s+/g,' ').trim(); return t.length>40?t.slice(0,40)+'…':t;}
+
+// ===== 초기화 =====
+function init(){
+  document.getElementById('styleBox').value=savedStyle;
+  renderStyleLog();
+  renderCharChips();
+  loadChar();
+  renderCharLog();
+  buildChips('hairChips',HAIRS,'hairBox',"반묶음 장발 ★기본",'__hairsingle');
+  buildChips('bodyChips',BODYTYPES,'bodyBox',"넓은 직각어깨·슬림근육 ★기본",'__bodysingle');
+  buildChips('costChips',COSTUMES,'costumeBox',null,'costName');
+  buildChips('accChips',ACCESSORIES,'accBox');
+  buildChips('poseChips',POSES,'poseBox');
+  buildChips('bgChips',BGS,'bgBox');
+  buildChips('compChips',COMPS,'compBox',"골반 위·정면");
+  buildChips('ratioChips',RATIOS,'ratioBox',"3:4 세로 (일러스트 · 896×1216)",'__ratiosingle');
+  ['hairBox','bodyBox','costumeBox','accBox','poseBox','bgBox','compBox','ratioBox','styleBox','faceBox'].forEach(id=>
+    document.getElementById(id).addEventListener('input',build));
+  document.getElementById('dedup').addEventListener('change',build);
+  window.__order='style';
+  document.getElementById('ord-style').classList.add('on');
+  build();
+}
+
+// ===== 그림체 저장 + 로그 =====
+function saveStyle(){
+  const v=document.getElementById('styleBox').value.trim();
+  if(v!==savedStyle){
+    styleLog.unshift({t:now(), s:snippet(v)});
+    styleLog=styleLog.slice(0,30);
+    savedStyle=v; saveStr(LS_STYLE,savedStyle); saveJSON(LS_STYLELOG,styleLog);
+    renderStyleLog();
+  }
+  document.getElementById('styleSaved').textContent='✓ 저장됨 '+now();
+  flash(event.target,'저장됨 ✓');
+}
+function resetStyle(){
+  document.getElementById('styleBox').value=DEFAULT_STYLE;
+  styleLog.unshift({t:now(), s:'(기본값으로 되돌림)'}); styleLog=styleLog.slice(0,30);
+  savedStyle=DEFAULT_STYLE; saveStr(LS_STYLE,savedStyle); saveJSON(LS_STYLELOG,styleLog);
+  renderStyleLog(); build();
+}
+function renderStyleLog(){
+  const box=document.getElementById('styleLog');
+  box.innerHTML = styleLog.length? styleLog.map(r=>`<div class="logrow"><span class="logtime">${r.t}</span> · ${r.s}</div>`).join('')
+    : '<div class="logrow">아직 수정 기록이 없습니다.</div>';
+}
+
+// ===== 캐릭터 =====
+function renderCharChips(){
+  const cc=document.getElementById('charChips'); cc.innerHTML='';
+  Object.keys(chars).forEach(k=>{
+    const c=document.createElement('div'); c.className='chip char'+(k===cur?' on':''); c.textContent=k;
+    c.onclick=()=>{cur=k; renderCharChips(); loadChar(); build();};
+    cc.appendChild(c);
+  });
+  const add=document.createElement('div'); add.className='chip char add'; add.textContent='+ 새 캐릭터';
+  add.onclick=addChar; cc.appendChild(add);
+}
+function loadChar(){
+  const c=chars[cur]||{face:'',memo:''};
+  document.getElementById('curName').textContent='· '+cur;
+  document.getElementById('nameBox').value=cur;
+  document.getElementById('memoBox').value=c.memo||'';
+  document.getElementById('faceBox').value=c.face||'';
+  document.getElementById('delBtn').style.display=Object.keys(chars).length>1?'inline':'none';
+  document.getElementById('charSaved').textContent = c.savedAt? ('✓ 저장됨 '+c.savedAt):'';
+}
+function saveChar(){
+  const newName=document.getElementById('nameBox').value.trim()||cur;
+  const memo=document.getElementById('memoBox').value.trim();
+  const face=document.getElementById('faceBox').value.trim();
+  const oldName=cur;
+  if(newName!==cur){ delete chars[cur]; cur=newName; }
+  chars[cur]={memo,face,savedAt:now()};
+  charLog.unshift({t:now(), s:(oldName!==newName?`${oldName} → ${newName} · `:`${cur} · `)+snippet(face)});
+  charLog=charLog.slice(0,30);
+  saveJSON(LS_CHARS,chars); saveJSON(LS_CHARLOG,charLog);
+  renderCharChips(); loadChar(); renderCharLog(); build();
+  flash(event.target,'저장됨 ✓');
+}
+function addChar(){
+  let n='새 캐릭터'; let i=2; while(chars[n]){n='새 캐릭터 '+i++;}
+  chars[n]={memo:'',face:''}; cur=n; saveJSON(LS_CHARS,chars);
+  renderCharChips(); loadChar(); document.getElementById('nameBox').focus();
+}
+function delChar(){
+  if(Object.keys(chars).length<=1) return;
+  if(!confirm(`'${cur}' 캐릭터를 삭제할까요?`)) return;
+  charLog.unshift({t:now(), s:`(삭제) ${cur}`}); charLog=charLog.slice(0,30);
+  delete chars[cur]; cur=Object.keys(chars)[0];
+  saveJSON(LS_CHARS,chars); saveJSON(LS_CHARLOG,charLog);
+  renderCharChips(); loadChar(); renderCharLog(); build();
+}
+function renderCharLog(){
+  const box=document.getElementById('charLog');
+  box.innerHTML = charLog.length? charLog.map(r=>`<div class="logrow"><span class="logtime">${r.t}</span> · ${r.s}</div>`).join('')
+    : '<div class="logrow">아직 수정 기록이 없습니다.</div>';
+}
+
+// ===== 칩 빌더 =====
+function buildChips(containerId,data,targetId,preselect,nameLabelId){
+  const cont=document.getElementById(containerId); cont.innerHTML='';
+  Object.keys(data).forEach(k=>{
+    const c=document.createElement('div'); c.className='chip'; c.textContent=k;
+    c.onclick=()=>{
+      if(nameLabelId){
+        cont.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+        c.classList.add('on');
+        document.getElementById(targetId).value=data[k];
+        const lbl=document.getElementById(nameLabelId);
+        if(lbl) lbl.textContent='▸ '+k;
+      }else{
+        c.classList.toggle('on');
+        const parts=[...cont.querySelectorAll('.chip.on')].map(x=>data[x.textContent]);
+        document.getElementById(targetId).value=parts.join(', ');
+      }
+      build();
+    };
+    if(preselect&&k===preselect){c.classList.add('on'); document.getElementById(targetId).value=data[k];}
+    cont.appendChild(c);
+  });
+}
+
+// ===== 합본 + 중복 제거 =====
+function dedupeText(text){
+  const raw=text.split(/(?<=[.;])\s+|\n+/).map(s=>s.trim()).filter(Boolean);
+  const seen=new Set(); const out=[];
+  for(const s of raw){
+    const key=s.toLowerCase().replace(/[^a-z0-9가-힣 ]/g,'').replace(/\s+/g,' ').trim();
+    const short=key.split(' ').slice(0,6).join(' ');
+    if(seen.has(key)||seen.has(short)) continue;
+    seen.add(key); seen.add(short); out.push(s);
+  }
+  return out.join(' ');
+}
+function setOrder(o){
+  window.__order=o;
+  document.getElementById('ord-style').classList.toggle('on', o==='style');
+  document.getElementById('ord-comp').classList.toggle('on', o==='comp');
+  build();
+}
+function build(){
+  const g=id=>document.getElementById(id).value.trim();
+  const comp=g('compBox'), pose=g('poseBox'), ratio=g('ratioBox');
+  const face=g('faceBox'), hair=g('hairBox'), body=g('bodyBox');
+  const cost=g('costumeBox'), acc=g('accBox'), bg=g('bgBox'), style=g('styleBox');
+  let parts;
+  if(window.__order==='comp'){
+    // 구도 우선 (SeaArt/SDXL/Flux) — 구도·포즈를 앞으로
+    parts=[comp,pose,ratio,face,hair,body,cost,acc,bg,style];
+  } else {
+    // 그림체 우선 (나노바나나/Gemini/범용) — 그림체를 맨 앞으로
+    parts=[style,face,hair,body,cost,acc,comp,pose,bg,ratio];
+  }
+  let merged=parts.filter(Boolean).join('\n');
+  if(document.getElementById('dedup').checked) merged=dedupeText(merged);
+  document.getElementById('output').textContent=merged;
+  const words=merged.split(/\s+/).filter(Boolean).length;
+  document.getElementById('stat').textContent=`${words} words · ${merged.length} chars`+(words>250?'  ⚠ 다소 김 — 슬롯을 줄이면 인식률 ↑':'');
+  // 통합본 (프롬프트 + 네거티브)
+  const neg=document.getElementById('negOutput').textContent.trim();
+  document.getElementById('fullOutput').textContent = merged + '\n\nNegative prompt: ' + neg;
+}
+function copyOut(){
+  const text=document.getElementById('output').textContent;
+  const ok=()=>flash(document.getElementById('copyBtn'),'복사됨 ✓');
+  const fail=()=>{
+    // 폴백: 임시 textarea + execCommand
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const done=document.execCommand('copy');
+      document.body.removeChild(ta);
+      if(done) ok(); else selectFallback();
+    }catch(e){ selectFallback(); }
+  };
+  const selectFallback=()=>{
+    // 최후 수단: 출력 박스를 드래그 선택 상태로 만들어 사용자가 Ctrl+C
+    const el=document.getElementById('output');
+    const range=document.createRange(); range.selectNodeContents(el);
+    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    flash(document.getElementById('copyBtn'),'선택됨 · Ctrl+C 눌러주세요');
+  };
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(ok).catch(fail);
+  } else {
+    fail();
+  }
+}
+function copyNeg(){
+  const text=document.getElementById('negOutput').textContent;
+  const btn=document.getElementById('negCopyBtn');
+  const ok=()=>flash(btn,'복사됨 ✓');
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(ok).catch(()=>fallbackCopy(text,btn));
+  } else { fallbackCopy(text,btn); }
+}
+function copyFull(){
+  const text=document.getElementById('fullOutput').textContent;
+  const btn=document.getElementById('fullCopyBtn');
+  const ok=()=>flash(btn,'복사됨 ✓');
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(ok).catch(()=>fallbackCopy(text,btn));
+  } else { fallbackCopy(text,btn); }
+}
+function fallbackCopy(text,btn){
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const done=document.execCommand('copy'); document.body.removeChild(ta);
+    flash(btn, done?'복사됨 ✓':'복사 실패');
+  }catch(e){ flash(btn,'복사 실패'); }
+}
+function flash(btn,txt){if(!btn)return; const t=btn.textContent; btn.textContent=txt; const dur=txt.length>8?2600:1200; setTimeout(()=>btn.textContent=t,dur);}
+init();
+</script>
+</body>
+</html>
