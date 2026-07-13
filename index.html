@@ -110,6 +110,13 @@
     <textarea id="bodyBox" rows="2" placeholder="체형 선택 또는 직접 작성"></textarea>
   </div>
 
+  <!-- EXPRESSION -->
+  <div class="card">
+    <h2><span class="badge var">가변</span> ②-4 표정 <span class="hint" style="display:inline">(장면별 교체 · 직접 작성 가능)</span></h2>
+    <div class="row" id="exprChips"></div>
+    <textarea id="exprBox" rows="2" placeholder="표정 선택 또는 직접 작성"></textarea>
+  </div>
+
   <!-- COSTUME -->
   <div class="card">
     <h2><span class="badge var">가변</span> ③ 의상 <span class="hint" style="display:inline">(레퍼런스 기반 질감·실루엣 강화)</span></h2>
@@ -152,6 +159,7 @@
       <div class="chip" id="ord-style" onclick="setOrder('style')">🎨 그림체 우선 (나노바나나·Gemini·범용)</div>
       <div class="chip" id="ord-comp" onclick="setOrder('comp')">📐 구도 우선 (SeaArt·SDXL·Flux)</div>
       <div class="chip" id="ord-gpt" onclick="setOrder('gpt')">🤖 GPT 최적화 (무쌍·이목구비 개성 강제)</div>
+      <div class="chip" id="ord-grok" onclick="setOrder('grok')">🌀 Grok 최적화 (주체 우선·긍정형·압축)</div>
     </div>
     <div class="out" id="output"></div>
     <div class="outbar" style="margin-top:12px;">
@@ -159,7 +167,7 @@
       <button class="act" id="copyBtn" onclick="copyOut()">복사</button>
     </div>
     <label style="margin-top:14px;">네거티브 프롬프트 <span class="hint" style="display:inline">(SeaArt의 네거티브 칸에 붙여넣기)</span></label>
-    <div class="out" id="negOutput" style="max-height:none; font-size:11px;">lowres, bad anatomy, bad hands, bad proportions, long neck, elongated neck, swan neck, extra long neck, deformed neck, worst quality, low quality, blurry, realistic, photorealistic, 3d render, deformed, extra fingers, messy flyaway hair strands, wispy stray hairs, low-set eyes, profile view, side view, from behind, multiple views</div>
+    <div class="out" id="negOutput" style="max-height:none; font-size:11px;">lowres, bad anatomy, bad hands, bad proportions, long neck, elongated neck, swan neck, extra long neck, deformed neck, worst quality, low quality, blurry, realistic, photorealistic, 3d render, deformed, extra fingers, hair strands over forehead, antenna-like wisps, messy flyaway hair, low-set eyes, off-shoulder, bare shoulder, spotlit subject, rim light, overexposed skin, profile view, side view, from behind, multiple views</div>
     <div class="outbar" style="margin-top:8px;">
       <span class="stat" style="color:var(--plum-soft); font-size:11px;">목 길게 나올 때 · 옆모습 방지에 효과적</span>
       <button class="act ghost mini" id="negCopyBtn" onclick="copyNeg()">네거티브 복사</button>
@@ -183,13 +191,13 @@ const DEFAULT_STYLE =
 LINE (core — the most important element): every form is defined by a VISIBLE hand-drawn BRUSH-INK outline. Confident calligraphic strokes with clearly varying line weight — thick and heavy where forms turn away or where lines terminate, tapering to a fine point at the ends, drawn as if with a Korean ink brush. The linework is the dominant layer and always stays crisp and fully visible ON TOP of the color — coloring never covers, blurs or dissolves it. Bold decisive contour lines around the hair mass, jaw, eyes, brows, lips, hands and the edges of the garment. Charcoal-ink black, not pure black.
 RENDERING: flat webtoon cel-paint with HARD-EDGED shadow shapes — shadows are drawn as clear, defined, hard-edged shapes (cel shading), NOT soft airbrushed gradients, NOT watercolor blending. Only the faintest ink wash for atmosphere. This is an inked webtoon panel, not a watercolor painting.
 DIMENSION & SHADOW (important): crisp cel shadow shapes carving the cheekbones, nose bridge, eye sockets, jaw, neck and collarbone, with strong value separation between the lit planes and the shadow planes. The shadow silhouettes have clean readable edges. Never flat, never evenly lit.
-SKIN FINISH: matte, smooth, never glossy — soft subsurface glow, dimensional shading (skin color and blush defined per character).
-LIGHTING: warm cinematic diffusion — late-afternoon or candle light through a hanji window, soft directional key light modeling the form, warm bounced fill, gentle falloff into shadow.
+SKIN FINISH: matte, smooth, never glossy — no inner glow, no luminous sheen. The skin sits in the room's dim ambient light and takes on its warm shadow tones (skin color and blush defined per character).
+LIGHTING & INTEGRATION (important): a dim, low-key candle-lit interior. The figure is lit by the SAME weak ambient light as the room — no studio key light, no spotlight, no rim light or backlight separating him from the background. Much of the figure falls into shadow; only small areas catch the faint candle glow. The character and the background share ONE unified dark warm color grade and ONE exposure, as if photographed together in the same dim room. The figure must NOT be brighter, cleaner or more saturated than his surroundings — he sits INTO the scene, half-swallowed by shadow. Intimate, smoky, sensual.
 FABRIC (signature): premium Korean silk layered with sheer translucent black organza — genuinely see-through, faintly revealing skin and inner layers, embroidery floating on the transparent fabric, multiple overlapping translucent layers with real depth, heavy silk draping and gravity folds. Never flat opaque fabric.
 COLOR: muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige.
 TEXTURE: barely-there hanji grain and fine premium film grain over the whole image.
 MOOD: quiet luxury, restrained, intimate, historical, poetic, emotionally immersive.
-Avoid: flat even lighting, dissolved or missing linework, uniform hairline-thin outlines, watercolor painting look, soft airbrushed gradients, oil painting, blurry edges, HDR, neon, manga screentones.`;
+Avoid: the figure spotlit or brighter than the background, rim light or backlight separating the subject, a cut-out pasted-on look, flat even lighting, dissolved or missing linework, uniform hairline-thin outlines, watercolor painting look, soft airbrushed gradients, oil painting, blurry edges, HDR, neon, manga screentones.`;
 
 // ===== 의상 10종 (레퍼런스 기반 질감·실루엣 강화) =====
 const COSTUMES = {
@@ -206,7 +214,7 @@ const COSTUMES = {
   "06 은밀(隱密)":
 `STYLE Eunmil — sheer AI-host aesthetic. An ultra-thin see-through black organza garment, genuinely translucent so the bare chest and collarbone show clearly through the fabric, with a deep open V-neckline exposing the sternum. Gold-leaf and lattice-window (changho) patterning and subtle embroidery float on the transparent silk, shimmering as light hits it, placed only at the edges so the sheer chest stays visible. The organza has real crisp texture — you can see it is a distinct see-through layer over skin, with soft folds and light catching the weave. Mother-of-pearl and gold ornaments. Silhouette: layered transparency, luminous, open and airy. Palette: ink-black, gold leaf, jade.`,
   "07 야월(夜月) ★메인":
-`Yahwa Gibang signature outfit (Yawol) — a Saint Laurent-inspired masculine reinterpretation of Joseon male gisaeng attire. OUTER: a very fine semi-transparent black organza jeogori, skin tone hazing faintly through, front panel embroidered with grey ink-line plum blossoms and clouds in a black-and-grey palette, so texture and layering replace direct exposure. INNER: minimal and open — the deep V-neckline opens low to reveal the bare collarbone, sternum and upper chest directly, no high closed ivory layer blocking the neck, only a loose thin silk band crossing softly low on the torso. The sheer translucent black organza outer drapes open over the bare skin, plum-blossom and cloud embroidery floating on the see-through fabric so the chest shows faintly through the sheer layers. One shoulder slips slightly off in relaxed runway styling. Broad structured shoulders taper to a slim waist for a long inverted-triangle silhouette. Wide flowing sleeves fall like water, organza catching and diffusing light. A wide black silk sash with silver-grey ornaments and gold-thread tassels. A slim black silk choker, a thin delicate band wrapped closely around the neck, minimal and clean with no pendant hanging from it. A single asymmetric silver-and-gold earring, slender dark metal rings. Palette: ink-black, charcoal grey, silver-grey patterns, off-white, champagne gold.`,
+`Yahwa Gibang signature outfit (Yawol) — a Saint Laurent-inspired masculine reinterpretation of Joseon male gisaeng attire. OUTER: a very fine semi-transparent black organza jeogori, skin tone hazing faintly through, front panel embroidered with grey ink-line plum blossoms and clouds in a black-and-grey palette, so texture and layering replace direct exposure. INNER: minimal and open — the deep V-neckline opens low to reveal the bare collarbone, sternum and upper chest directly, no high closed ivory layer blocking the neck, only a loose thin silk band crossing softly low on the torso. The sheer translucent black organza outer drapes open over the bare skin, plum-blossom and cloud embroidery floating on the see-through fabric so the chest shows faintly through the sheer layers. Both shoulders are properly worn and covered — the robe sits squarely on the shoulders with a clean, sharply tailored shoulder line, never slipping off. Worn like a Saint Laurent smoking robe: a long fluid open-front gown, the front panels falling straight down in a deep column, cinched at the waist by the sash, with a strong precise shoulder structure. Broad structured shoulders taper to a slim waist for a long inverted-triangle silhouette. Wide flowing sleeves fall like water, organza catching and diffusing light. A wide black silk sash with silver-grey ornaments and gold-thread tassels. A slim black silk choker, a thin delicate band wrapped closely around the neck, minimal and clean with no pendant hanging from it. A single asymmetric silver-and-gold earring, slender dark metal rings. Palette: ink-black, charcoal grey, silver-grey patterns, off-white, champagne gold.`,
   "08 현루(玄樓)":
 `STYLE Hyeonru — trustworthy refined luxury. A deep V-collar black jeogori with restrained antique-gold embroidery along sleeves and collar, worn over a crisp white inner collar, slim tailored black trousers, a wide gold-toned sash defining the waist. Matte silk with subtle sheen, controlled exposure, dignified and expensive. Silhouette: structured, vertical, composed. Palette: ink-black, white, gold, jade.`,
   "09 자운(紫雲)":
@@ -249,6 +257,15 @@ const COMPS = {
 // ===== 이미지 비율 (SDXL 권장 해상도 포함) =====
 // ===== GPT(4o) 최적화 헤더 · 테일 =====
 // GPT는 자체 미학이 강해 "기본 룩을 피하라"고 명시해야 프롬프트가 먹힘
+// ===== Grok(Imagine) 최적화 =====
+// Grok은 ①네거티브를 무시 ②주체를 앞에 둬야 함 ③80~120단어 넘으면 초점 흐려짐
+// → 그림체를 압축하고, 금지어를 전부 긍정형으로 바꿔 뒤에 짧게 붙임
+const GROK_STYLE =
+`Drawn as a hand-inked Korean BL historical webtoon panel: bold brush-ink outlines with clearly varying thickness, flat cel coloring, hard-edged shadow shapes and strong light-to-shadow contrast. Dim candle-lit interior, deep warm shadows. Muted palette of ink-black, charcoal, ivory and antique gold, with fine film grain.`;
+
+const GROK_TAIL =
+`Key features to keep exact: sleek monolid eyes — smooth flat upper lids with a single clean lash line and outer corners tilting slightly up. Eyes set high on the face. Hair swept back tight and glossy, with just one or two fine strands loose at the sideburns. The robe rests squarely on both shoulders with a clean tailored shoulder line. He and the dim candle-lit room share one dark warm exposure — he sits deep into the shadow of the scene rather than standing out from it.`;
+
 const GPT_HEAD =
 `Draw this as a hand-inked Korean BL webtoon panel. Do NOT use the default glossy AI-illustration look.
 
@@ -256,11 +273,13 @@ CRITICAL FACE RULES — follow exactly, do not fall back to a generic handsome f
 1) MONOLID EYES. The upper eyelids are completely smooth and flat. There is NO double-eyelid crease and NO fold line above the lashes — the skin runs unbroken from the eyelashes up to the brow. Do not add a double eyelid under any circumstances.
 2) Render the SPECIFIC features described below exactly as written. Do not homogenize them into a soft, symmetrical, generic pretty face.
 3) INK BRUSH LINEWORK IS MANDATORY. Every form must be outlined with a visible, hand-drawn brush-ink line — bold confident strokes with clearly VARYING thickness (heavy where forms turn away, tapering to a fine point at the ends), like Korean calligraphy brushwork. The outlines sit ON TOP of the color and must stay sharp and unmistakable. Do NOT render this as a watercolor painting, do NOT use soft airbrushed gradients, do NOT let the lines dissolve into the paint. Shadows must be HARD-EDGED cel shapes with clean readable edges and strong value contrast — flat inked webtoon panel, not soft painting.
-4) HAIR MUST BE SLEEK AND CLEAN. Draw the hair as smooth grouped masses with a crisp, tidy hairline. Do NOT add loose flyaway strands, wispy baby hairs, or scattered stray hairs falling across the face and forehead. At most one or two deliberate strands — no more.
-5) FACIAL PROPORTION: place the eyes HIGH, at or just above the vertical midline of the head. Do not set the eyes low or stretch the forehead tall.`;
+4) HAIR MUST BE SLEEK AND CLEAN. Draw the hair as smooth grouped masses swept back tightly with a crisp, tidy hairline. Do NOT draw ANY loose strands, wispy baby hairs, or stray hairs hanging down over the forehead, the headband, or across the face — no antenna-like wisps whatsoever. The ONLY loose hairs permitted are one or two fine strands at the sideburns, in front of and just below the ears. Nowhere else.
+5) FACIAL PROPORTION: place the eyes HIGH, at or just above the vertical midline of the head. Do not set the eyes low or stretch the forehead tall.
+6) LIGHT THE FIGURE AND THE BACKGROUND AS ONE. This is a dim, candle-lit room. Do NOT spotlight the character, do NOT give him a key light or rim light, do NOT make him brighter or cleaner than his surroundings. He must sit INTO the scene under the same weak ambient light and the same dark warm color grade as the background — much of him falling into shadow, half-swallowed by the dark. Intimate, smoky, sensual — not a bright subject pasted on a dark backdrop.
+7) The robe sits squarely on BOTH shoulders with a clean tailored shoulder line. Never let a shoulder slip off.`;
 
 const GPT_TAIL =
-`STRICTLY AVOID: double eyelids, creased upper lids, excessive flyaway hair strands, wispy baby hairs, messy stray hairs across the face, low-set eyes, an overly tall forehead, watercolor painting rendering, soft airbrushed gradients, missing or dissolved outlines, uniform hairline-thin lines, the default soft glossy AI-illustration finish, plastic skin, doll-like uniform faces, over-symmetrical generic beauty, photorealism, 3D render. The image must read as a hand-INKED Korean webtoon panel: bold varying-width brush outlines on top of flat cel color with hard-edged shadow shapes.`;
+`STRICTLY AVOID: double eyelids, creased upper lids, hair strands hanging over the forehead or headband, antenna-like wisps, wispy baby hairs, messy stray hairs across the face, low-set eyes, an overly tall forehead, an off-the-shoulder or slipping robe, a spotlit subject brighter than the background, rim light, a cut-out pasted-on look, watercolor painting rendering, soft airbrushed gradients, missing or dissolved outlines, uniform hairline-thin lines, the default soft glossy AI-illustration finish, plastic skin, doll-like uniform faces, over-symmetrical generic beauty, photorealism, 3D render. The image must read as a hand-INKED Korean webtoon panel: bold varying-width brush outlines on top of flat cel color with hard-edged shadow shapes.`;
 
 const RATIOS = {
   "9:16 세로 (앱/스토리 · 896×1600)":"vertical 9:16 aspect ratio, tall portrait format",
@@ -278,6 +297,20 @@ const BODYTYPES = {
   "탄탄한 근육질":"a fit muscular build with clearly defined chest and arms, strong masculine physique, broad shoulders",
   "연약하지만 건강한 (설온)":"a lean graceful build with soft natural definition, moderately broad shoulders (not narrow) flowing into a slim waist, a long elegant neck and beautiful collarbones, long slender arms, delicate hands, a faint soft line of muscle across the chest and abdomen from daily activity rather than training — no bulky muscles, soft youthful and touchable, elegant and slightly fragile",
   "훤칠하고 마른":"tall and slim, lean lanky build, long neck and limbs, understated elegance"
+};
+
+// ===== 표정 프리셋 =====
+const EXPRESSIONS = {
+  "차분한 자신감 ★기본":"a composed, quietly confident expression carrying both cool distance and a trace of gentle warmth, lips relaxed and closed",
+  "은은한 미소":"a faint, subtle smile — the corners of the mouth barely lifted, the eyes softening warmly, a quiet gentle affection showing through the composure",
+  "나른한 웃음":"a languid, lazy smile — heavy half-lidded eyes, the mouth curving slowly and knowingly, unhurried and sensual, as if amused by something private",
+  "싱긋 웃음":"a bright quick grin flashing across the face, one corner of the mouth pulling up higher, eyes crinkling with playful teasing warmth",
+  "부끄러움 (볼 빨개짐)":"a flustered, bashful expression — the cheeks, ears and the skin under the eyes flushing vividly red, eyes darting away from the viewer, lips pressed together, the cool composure cracking into shy embarrassment",
+  "당황 (땀)":"a flustered, caught-off-guard expression — eyes slightly widened, brows drawn up, a single bead of sweat sliding down the temple, the mouth parted awkwardly, the usual composure completely undone",
+  "경청하는 표정":"an attentive listening expression — the head tilted slightly, eyes fixed softly and steadily on the viewer, brows relaxed, lips gently closed, giving quiet undivided attention",
+  "유혹하는 눈빛":"a seductive, teasing look — chin dipped low while the eyes look up through the lashes, a slow knowing half-smile, gaze locked on the viewer, deliberately inviting",
+  "서늘한 무표정":"a cool blank expression — no smile, eyes flat and unreadable, an aloof, distant stillness",
+  "다정한 눈맞춤":"a tender, affectionate gaze held directly on the viewer, eyes warm and unguarded, a small soft smile, all coolness melted away"
 };
 
 const HAIRS = {
@@ -298,8 +331,8 @@ const ACCESSORIES = {
   "장죽 담뱃대":"holding a long slender Joseon smoking pipe (jangjuk) with a brass bowl, languid gesture",
   "붉은 댕기":"long crimson silk daenggi ribbons woven into the hair, trailing down",
   "옥 반지·귀걸이":"slender jade rings and a single asymmetric jade-and-gold earring",
-  "망건 (이마 띠)":"wearing a manggeon — a THICK, WIDE black horsehair band worn low across the brow, its lower edge sitting directly on top of the eyebrows so almost NO forehead is left exposed between the band and the brows. The band is broad and substantial (roughly three fingers wide), wrapping firmly around the head, with a small jade ornament at the center front. Above the solid band, a slightly sheer dark mesh panel lets the hair show faintly through, rising toward the topknot.",
-  "망건 + 상투관":"wearing a manggeon — a THICK, WIDE black horsehair band worn low across the brow, its lower edge resting right on top of the eyebrows so almost NO forehead is exposed; the band is broad and substantial with a small jade ornament at center front, and above it a slightly sheer dark mesh panel through which the hair faintly shows — together with a small ornate topknot crown (sangtugwan) fixed at the base of the topknot above. Aristocratic and formal.",
+  "망건 (이마 띠)":"wearing a manggeon — a THICK, WIDE black horsehair band worn low across the brow, its lower edge sitting directly on top of the eyebrows so almost NO forehead is left exposed between the band and the brows. The band is broad and substantial (roughly three fingers wide), wrapping firmly around the head, with a small jade ornament at the center front. Above the solid band, a slightly sheer dark mesh panel lets the hair show faintly through, rising toward the topknot. HAIR WITH THE MANGGEON: the hair is swept back completely smooth and tight under the band — absolutely NO loose strands hanging down over the forehead, the band or the face (no antenna-like wisps). Only one or two fine strands at the sideburns, in front of and just below the ears, may fall loose.",
+  "망건 + 상투관":"wearing a manggeon — a THICK, WIDE black horsehair band worn low across the brow, its lower edge resting right on top of the eyebrows so almost NO forehead is exposed; the band is broad and substantial with a small jade ornament at center front, and above it a slightly sheer dark mesh panel through which the hair faintly shows — together with a small ornate topknot crown (sangtugwan) fixed at the base of the topknot above. HAIR WITH THE MANGGEON: swept back completely smooth and tight under the band — absolutely NO loose strands hanging over the forehead, the band or the face (no antenna-like wisps). Only one or two fine strands at the sideburns, in front of and just below the ears. Aristocratic and formal.",
   "갓 (넓은 챙)":"wearing a traditional black gat — a Joseon horsehair hat with a WIDE broad brim (generously wide, not narrow), the semi-transparent brim casting a soft shadow, elegant and refined",
   "갓 + 반투명 베일":"wearing a translucent black gat with a WIDE broad brim and a fine sheer silk veil draping from the brim, softly veiling and shadowing the face, mysterious and elegant",
   "상투 (동곳)":"hair worn up in a traditional Joseon topknot fixed with a small ornate topknot pin (donggot), no hat, exposed hair and forehead, clean and dignified",
@@ -310,7 +343,7 @@ const ACCESSORIES = {
 // ===== 기본 캐릭터 =====
 const SEED_CHARS = {
   "하진 (명리)":{memo:"명리 담당 / 기방 마스코트 / 먹색(거의 블랙) 눈+작은 동공+삼백안 + 붉은 눈가 / 서늘함+다정함", face:
-`A young East Asian man, the mascot of Yahwa Gibang — a face blending cool aristocratic mystery with gentle warmth. Refined elegant features: long vertical face, smooth narrow jawline, small V-chin, a calm forehead of normal height (not tall or overly broad), low subtle cheekbones. FACIAL PROPORTION: the eyes sit HIGH on the face, at or just above the vertical midline of the head — do not place the eyes low, do not enlarge the forehead. Narrow long almond eyes, half-lidded and languid, with sleek monolid eyes — the upper eyelids are completely smooth and flat with NO double-eyelid crease and no fold line, the skin running unbroken from the eyelashes up to the brow (Korean single-eyelid / monolid). Sharp clean inner corners with outer corners lifting slightly upward — a subtle cat-eye tilt. SIGNATURE: near-black ink-colored irises, very dark sumi-ink charcoal eyes almost black with only the faintest grey undertone, with small constricted pupils, a distinct sanpaku gaze where the white of the eye shows on three sides (both sides and below the iris), the iris sitting slightly high — giving a cool, intense, slightly unsettling mysterious stare. Soft red-tinged eye makeup — a delicate crimson flush along the outer eye corners and lids, sensual and striking against the near-black eyes. Dark brows with a soft semi-arched shape, the brow tails lifting slightly upward. Long slim nose with a small neat tip. A medium-wide mouth, the lips wide horizontally with a thin M-curved upper lip and slightly fuller lower lip. A composed, quietly confident expression carrying both cool distance and a trace of gentle warmth. Grey-black hair color. Warm porcelain skin with ivory base, soft peach undertones and a faint rose flush on the cheeks and ears.`},
+`A young East Asian man, the mascot of Yahwa Gibang — a face blending cool aristocratic mystery with gentle warmth. Refined elegant features: long vertical face, smooth narrow jawline, small V-chin, a calm forehead of normal height (not tall or overly broad), low subtle cheekbones. FACIAL PROPORTION: the eyes sit HIGH on the face, at or just above the vertical midline of the head — do not place the eyes low, do not enlarge the forehead. Narrow long almond eyes, half-lidded and languid, with sleek monolid eyes — the upper eyelids are completely smooth and flat with NO double-eyelid crease and no fold line, the skin running unbroken from the eyelashes up to the brow (Korean single-eyelid / monolid). Sharp clean inner corners with outer corners lifting slightly upward — a subtle cat-eye tilt. SIGNATURE: near-black ink-colored irises, very dark sumi-ink charcoal eyes almost black with only the faintest grey undertone, with small constricted pupils, a distinct sanpaku gaze where the white of the eye shows on three sides (both sides and below the iris), the iris sitting slightly high — giving a cool, intense, slightly unsettling mysterious stare. Soft red-tinged eye makeup — a delicate crimson flush along the outer eye corners and lids, sensual and striking against the near-black eyes. Dark brows with a soft semi-arched shape, the brow tails lifting slightly upward. Long slim nose with a small neat tip. A medium-wide mouth, the lips wide horizontally with a thin M-curved upper lip and slightly fuller lower lip. Grey-black hair color. Warm porcelain skin with ivory base, soft peach undertones and a faint rose flush on the cheeks and ears.`},
   "설온 (雪溫)":{memo:"부드럽고 보호본능 자극 / 백매화 미인 / 백금발+은회색 눈 / 잘 붉어짐 / 연약하지만 건강한 청년", face:
 `A breathtakingly beautiful young East Asian man in his early twenties, like a white plum blossom in winter — an innocent, gentle beauty that naturally awakens protectiveness and a subtle urge to tease him. FACE: a long elegant oval face, soft inverted-egg shape, smooth narrow jawline with no sharp angles, small V-chin, broad calm forehead, low delicate cheekbones — youthful and refined. EYES: long narrow almond eyes with slightly downturned outer corners, a soft half-lidded gaze, large irises, always looking gentle and a little uncertain, as if about to become embarrassed. IRIS: bright light grey eyes, pale silver-grey with a faint icy-blue undertone, soft and translucent, luminous but natural like cloudy winter skies. Very pale ash-blond eyelashes, almost silver in some light. Soft ash-blond eyebrows, straight with a gentle taper, thin and refined, never harsh. Straight elegant nose with a moderately high bridge and a small neat rounded tip. A small mouth, soft pink, thin M-shaped upper lip and slightly fuller lower lip, naturally left slightly parted. SKIN: porcelain with a warm ivory base and soft peach undertones, very smooth, a faint rosy flush on the cheeks — and when embarrassed his ears, neck and under-eyes turn vividly red (his most distinctive trait). HAIR: very pale ash platinum-blond, almost white with a faint warm cream undertone, long straight hair falling below the chest, heavy silky texture with soft natural layers, fine strands framing the face. EXPRESSION: polite, gentle, shy, faintly nervous, a small hesitant smile — an exceptionally beautiful and modest young nobleman whose delicate looks and easy blushing make others want to spoil and tease him.`}
 };
@@ -339,13 +372,14 @@ function init(){
   renderCharLog();
   buildChips('hairChips',HAIRS,'hairBox',"반묶음 장발 ★기본",'__hairsingle');
   buildChips('bodyChips',BODYTYPES,'bodyBox',"넓은 직각어깨·슬림근육 ★기본",'__bodysingle');
+  buildChips('exprChips',EXPRESSIONS,'exprBox',"차분한 자신감 ★기본",'__exprsingle');
   buildChips('costChips',COSTUMES,'costumeBox',null,'costName');
   buildChips('accChips',ACCESSORIES,'accBox');
   buildChips('poseChips',POSES,'poseBox');
   buildChips('bgChips',BGS,'bgBox');
   buildChips('compChips',COMPS,'compBox',"골반 위·정면");
   buildChips('ratioChips',RATIOS,'ratioBox',"3:4 세로 (일러스트 · 896×1216)",'__ratiosingle');
-  ['hairBox','bodyBox','costumeBox','accBox','poseBox','bgBox','compBox','ratioBox','styleBox','faceBox'].forEach(id=>
+  ['hairBox','bodyBox','exprBox','costumeBox','accBox','poseBox','bgBox','compBox','ratioBox','styleBox','faceBox'].forEach(id=>
     document.getElementById(id).addEventListener('input',build));
   document.getElementById('dedup').addEventListener('change',build);
   window.__order='style';
@@ -470,38 +504,47 @@ function setOrder(o){
   document.getElementById('ord-style').classList.toggle('on', o==='style');
   document.getElementById('ord-comp').classList.toggle('on', o==='comp');
   document.getElementById('ord-gpt').classList.toggle('on', o==='gpt');
+  document.getElementById('ord-grok').classList.toggle('on', o==='grok');
   build();
 }
 function build(){
   const g=id=>document.getElementById(id).value.trim();
   const comp=g('compBox'), pose=g('poseBox'), ratio=g('ratioBox');
-  const face=g('faceBox'), hair=g('hairBox'), body=g('bodyBox');
+  const face=g('faceBox'), hair=g('hairBox'), body=g('bodyBox'), expr=g('exprBox');
   const cost=g('costumeBox'), acc=g('accBox'), bg=g('bgBox'), style=g('styleBox');
   let parts;
   if(window.__order==='comp'){
     // 구도 우선 (SeaArt/SDXL/Flux) — 구도·포즈를 앞으로
-    parts=[comp,pose,ratio,face,hair,body,cost,acc,bg,style];
+    parts=[comp,pose,ratio,face,expr,hair,body,cost,acc,bg,style];
   } else if(window.__order==='gpt'){
     // GPT 최적화 — SD문법 제거 + 무쌍/개성 강제 헤더 + 크림체 차단
     const strip=t=>t.replace(/\(([^()]*?):[\d.]+\)/g,'$1');
-    parts=[GPT_HEAD,strip(style),strip(face),strip(hair),strip(body),strip(cost),strip(acc),strip(comp),strip(pose),strip(bg),strip(ratio),GPT_TAIL];
+    parts=[GPT_HEAD,strip(style),strip(face),strip(expr),strip(hair),strip(body),strip(cost),strip(acc),strip(comp),strip(pose),strip(bg),strip(ratio),GPT_TAIL];
+  } else if(window.__order==='grok'){
+    // Grok — 주체 먼저 → 장면 → 압축 그림체 → 긍정형 강조 (네거티브 미사용, 길이 최소화)
+    const strip=t=>t.replace(/\(([^()]*?):[\d.]+\)/g,'$1');
+    parts=[strip(face),strip(expr),strip(hair),strip(body),strip(cost),strip(acc),strip(comp),strip(pose),strip(bg),GROK_STYLE,GROK_TAIL,strip(ratio)];
   } else {
     // 그림체 우선 (나노바나나/Gemini/범용) — 그림체를 맨 앞으로
-    parts=[style,face,hair,body,cost,acc,comp,pose,bg,ratio];
+    parts=[style,face,expr,hair,body,cost,acc,comp,pose,bg,ratio];
   }
   const isGpt = window.__order==='gpt';
+  const isGrok = window.__order==='grok';
   let merged=parts.filter(Boolean).join('\n');
-  // GPT 모드: 구조·반복 강조가 중요하므로 dedup 건너뜀
+  // GPT 모드: 구조·반복 강조가 중요하므로 dedup 건너뜀 (Grok은 길이가 중요해 dedup 유지)
   if(!isGpt && document.getElementById('dedup').checked) merged=dedupeText(merged);
   document.getElementById('output').textContent=merged;
   const words=merged.split(/\s+/).filter(Boolean).length;
   document.getElementById('stat').textContent=`${words} words · ${merged.length} chars`
     +(isGpt?'  · GPT 모드 (SD문법 제거 · 무쌍 강제)':'')
-    +(words>250&&!isGpt?'  ⚠ 다소 김 — 슬롯을 줄이면 인식률 ↑':'');
-  // 통합본 (프롬프트 + 네거티브) — GPT는 네거티브를 못 읽으므로 미첨부
+    +(isGrok?(words>120?'  ⚠ Grok은 120단어 넘으면 초점이 흐려집니다 — 슬롯을 줄이세요':'  · Grok 모드 (주체 우선 · 긍정형)'):'')
+    +(words>250&&!isGpt&&!isGrok?'  ⚠ 다소 김 — 슬롯을 줄이면 인식률 ↑':'');
+  // 통합본 — GPT·Grok은 네거티브를 읽지 않으므로 미첨부
   const neg=document.getElementById('negOutput').textContent.trim();
-  document.getElementById('fullOutput').textContent = isGpt
-    ? merged + '\n\n(GPT는 네거티브 프롬프트를 읽지 않습니다 — 위 STRICTLY AVOID 문장이 그 역할을 합니다)'
+  document.getElementById('fullOutput').textContent = (isGpt||isGrok)
+    ? merged + (isGpt
+        ? '\n\n(GPT는 네거티브 프롬프트를 읽지 않습니다 — 위 STRICTLY AVOID 문장이 그 역할을 합니다)'
+        : '\n\n(Grok은 네거티브를 무시합니다 — 금지 대신 긍정형 서술로 대체되어 있습니다)')
     : merged + '\n\nNegative prompt: ' + neg;
 }
 function copyOut(){
