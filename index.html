@@ -202,19 +202,7 @@
 <script>
 // ===== 기본 그림체 =====
 const DEFAULT_STYLE =
-`Premium Korean BL editorial manhwa illustration, semi-realistic Korean romance manhwa with refined editorial finish — elegant drawing over painterly rendering, a premium historical BL cover, not commercial anime.
-LINE (core — the most important element): every form is defined by a VISIBLE hand-drawn BRUSH-INK outline. Confident calligraphic strokes with clearly varying line weight — thick and heavy where forms turn away or where lines terminate, tapering to a fine point at the ends, drawn as if with a Korean ink brush. The linework is the dominant layer and always stays crisp and fully visible ON TOP of the color — coloring never covers, blurs or dissolves it. Bold decisive contour lines around the hair mass, jaw, eyes, brows, lips, hands and the edges of the garment. Charcoal-ink black, not pure black.
-RENDERING: flat webtoon cel-paint with HARD-EDGED shadow shapes — shadows are drawn as clear, defined, hard-edged shapes (cel shading), NOT soft airbrushed gradients, NOT watercolor blending. Only the faintest ink wash for atmosphere. This is an inked webtoon panel, not a watercolor painting. BACKGROUND CONSISTENCY (important): render the BACKGROUND and setting in the exact SAME hand-inked webtoon style as the figure — the same visible brush-ink outlines, the same flat cel shapes and hard-edged shadows. The background must NOT be a soft watercolor or painterly wash behind an inked character; architecture, trees, blossoms and props all carry clean ink linework and flat cel color, only softly blurred for depth. Figure and background belong to ONE consistent inked webtoon world.
-DIMENSION & SHADOW (important): crisp cel shadow shapes carving the cheekbones, nose bridge, eye sockets, jaw, neck and collarbone, with strong value separation between the lit planes and the shadow planes. The shadow silhouettes have clean readable edges. Never flat, never evenly lit.
-SKIN FINISH: matte, smooth, never glossy — no inner glow, no luminous sheen. The skin sits in the room's dim ambient light, but it stays WARM AND ALIVE: candlelight is deep amber, so lit skin reads warm honey-amber and shadowed skin reads warm reddish-brown, never grey or ashen. Do NOT add any default cheek blush or red flush to the face — keep the complexion an even warm tone. Any blush, flush or red tint is defined PER CHARACTER only, not added by default here (skin color and blush defined per character).
-LIGHTING & INTEGRATION (important): a dim, low-key candle-lit interior. The figure is lit by the SAME weak ambient light as the room — no studio key light, no spotlight, no rim light or backlight separating him from the background. Much of the figure falls into shadow; only small areas catch the faint candle glow. The character and the background share ONE unified dark warm color grade and ONE exposure, as if photographed together in the same dim room. The figure must NOT be brighter, cleaner or more saturated than his surroundings — he sits INTO the scene, half-swallowed by shadow. Intimate, smoky, sensual.
-VALUE CEILING (critical): no part of the skin, face or clothing may be pure white or near-white. The brightest value anywhere on the figure stays at a mid-tone — but WARM AND SATURATED, never a flat grey. FULL BRIGHTNESS IS RESERVED ONLY FOR THE CANDLE FLAMES themselves.
-DARK DOES NOT MEAN GREY (critical): keeping the figure dark must NOT drain the colour out of him. The darks are rich warm browns, amber and deep plum — never ashen grey, never desaturated, never a cold grey cast. His skin must read as living flesh in warm candlelight, with blood beneath it. He is a man sitting in a dim warm room, NOT a corpse, NOT a ghost, NOT a black-and-white photograph. The room's darkness falls ACROSS the figure: let cast shadows from the lattice, the folding screen and the surrounding objects fall over his face, neck and chest, breaking up his silhouette and binding him into the scene. If the figure were cut out of the image, his tones must match the room exactly.
-MATERIAL RENDERING: whatever the garment is, render its fabric with conviction — clear material weight and believable gravity folds, the drape and creases following the body, surface texture (weave, sheen or matte) readable, light catching edges and folds. Let each outfit read as its own specific cloth (heavy hemp, crisp linen, soft silk, sheer organza, etc.) rather than a generic default; do not force any one fabric type. Cloth always has real weight, structure and folds, never flat lifeless drapery.
-COLOR: muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige.
-TEXTURE: barely-there hanji grain and fine premium film grain over the whole image.
-MOOD: quiet luxury, restrained, intimate, historical, poetic, emotionally immersive.
-Avoid: ashen grey skin, desaturated corpse-like skin, a lifeless drained face, a cold grey colour cast, black-and-white rendering, the figure spotlit or brighter than the background, rim light or backlight separating the subject, a cut-out pasted-on look, flat even lighting, dissolved or missing linework, uniform hairline-thin outlines, watercolor painting look, soft airbrushed gradients, oil painting, blurry edges, HDR, neon, manga screentones.`;
+`Premium Korean BL editorial manhwa illustration, CLEAN KOREAN WEBTOON STYLE — crisp digital linework, flat color fill, minimal-to-no painterly blending. Not an oil painting, not a watercolor wash, not muddy or smoky rendering. LINE (core): every form defined by a clean, confident ink-brush outline — moderate line-weight variation (not excessive), tapering at line ends. Lines stay crisp and fully visible on top of color at all times. Charcoal-ink black, not pure black. Around the eyes and brows specifically: soft, thin, relaxed linework — no heavy dark strokes that read as a scowl. RENDERING: flat webtoon cel-paint, HARD-EDGED shadow shapes only — 2-3 clean flat shadow tones per surface, no soft gradients, no airbrush blending, no ink-wash atmosphere layered over the whole image. Background rendered in the same flat cel style as the figure — same clean lines, same flat shadow shapes, no soft painterly background behind a sharp foreground. SKIN: matte, warm honey-amber in light, warm reddish-brown in shadow — flat cel tones, not blended gradients. Even complexion, no default blush. LIGHTING: dim candlelit interior, unified warm dark grade between figure and background, but shadow shapes stay CLEAN AND FLAT, not smoky or diffused. VALUE: the figure must not be brighter or more spotlit than the background — no part of the skin or clothing is pure white or near-white; the brightest values stay warm and mid-toned, with full brightness reserved for the candle flames themselves, so the figure sits into the scene rather than floating in front of it. COLOR: muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige. Flat color fields, not painterly mixing. MATERIAL: garment fabric rendered with clear flat-shaded folds — weight and drape readable through clean shadow shapes, not blended sheen; let each outfit read as its own cloth, do not force any one fabric type. TEXTURE: very light hanji grain only, no heavy film grain, no soft glow. MOOD: quiet luxury, refined, warm, welcoming — not brooding, not menacing. Avoid: glaring eyes, scowling brows, intimidating stare, sharp/intense gaze, oil painting texture, watercolor blending, soft airbrushed gradients, smoky diffused rendering, painterly muddy color mixing, ashen grey skin, the figure spotlit or brighter than the background, rim light/backlight separating subject, flat even lighting, dissolved linework, manga screentones, HDR, neon.`;
 
 // ===== 의상 10종 (레퍼런스 기반 질감·실루엣 강화) =====
 const COSTUMES = {
@@ -249,7 +237,8 @@ const POSES = {
   "부채 든 포즈":"holding a folding fan half-open near the chest, elegant restrained posture",
   "돌아보는 순간":"glancing back over the shoulder, subtle knowing look",
   "차 따르는 손":"pouring tea with graceful long fingers, gaze softly downward",
-  "기대어 앉음":"reclining elegantly against a low armrest, relaxed languid posture"
+  "기대어 앉음":"reclining elegantly against a low armrest, relaxed languid posture",
+  "술 따르며 눈맞춤":"pouring wine for a guest — one hand tilts an ornate pot to pour a thin stream into a small cup held in the other hand, both hands and the pouring action kept low near the cup. The head stays tilted gently down toward the cup at a natural, comfortable angle (NOT twisted or craned), while ONLY THE EYES lift — a sidelong upward glance through half-lidded lids, the dark irises looking straight up at the viewer/guest. A calm, knowing, faintly seductive look. Keep the neck relaxed and natural, no awkward head turn"
 };
 // ===== 배경 · 장면 (브랜드 가이드: 낮=핑크 베일 / 밤=문 하모니) =====
 const BGS = {
@@ -287,19 +276,17 @@ const COMPS = {
 // ===== 이미지 비율 (SDXL 권장 해상도 포함) =====
 
 // ===== 한국어 대역 (읽기 전용 · 이미지 툴에는 영문을 넣어야 함) =====
-const KO_STYLE = `프리미엄 한국 BL 에디토리얼 만화 일러스트, 반실사 로맨스 만화체.
-선(핵심): 모든 형태를 손으로 그린 붓 먹선 외곽선으로 잡음. 굵기가 확실히 변하는 서예 붓 획 — 형태가 꺾이는 곳은 굵게, 끝은 가늘게 빠짐. 선이 색 위에 올라앉아 절대 뭉개지지 않음.
-채색: 플랫 웹툰 셀 채색 + 경계가 뚜렷한 하드엣지 그림자. 부드러운 에어브러시 그라데이션·수채화 블렌딩 아님. 먹으로 그린 웹툰 컷이지 수채화가 아님. 배경 일관성(중요): 배경과 장소도 인물과 정확히 같은 붓 먹선 웹툰 그림체로 그릴 것 — 같은 먹선 외곽선, 같은 플랫 셀 형태와 하드엣지 그림자. 인물만 먹선이고 배경은 부드러운 수채화 워시가 되면 안 됨. 건축·나무·꽃·소품 모두 깔끔한 먹선과 플랫 셀 채색을 지니되 원근을 위해 부드럽게 흐려질 뿐. 인물과 배경은 하나의 일관된 먹선 웹툰 세계.
-입체·음영: 광대·콧대·눈두덩·턱·목·쇄골을 또렷한 셀 그림자가 깎아냄. 밝은 면과 그림자 면의 명도 차이가 강함.
-피부 마감: 매트, 매끄러움, 광택 없음. 발광 없음. 다만 피부는 따뜻하고 살아 있어야 함 — 촛불은 짙은 호박색이므로, 빛을 받은 피부는 따뜻한 꿀빛 호박색, 그늘진 피부는 따뜻한 적갈색으로 읽힘(회색·잿빛 아님). 얼굴에 기본 볼 홍조나 붉은 기를 넣지 말 것 — 안색은 고른 따뜻한 톤으로 유지. 홍조·붉은 기는 오직 캐릭터별로만 정의되며 여기서 기본으로 추가하지 않음.
-조명·통합: 어둡고 낮은 조도의 촛불 실내. 인물에게 별도 키라이트·스포트라이트·림라이트 없음. 인물과 배경이 하나의 어두운 웜톤·하나의 노출을 공유. 인물이 주변보다 밝으면 안 됨 — 어둠에 반쯤 잠김.
-밝기 상한선(중요): 피부·얼굴·의상 어디에도 순백색 금지. 인물의 가장 밝은 부분도 중간 명도까지 — 단 따뜻하고 채도가 살아 있어야 하며 절대 밋밋한 회색이 아님. 완전한 밝기는 오직 촛불 불꽃에만. 방의 그림자가 인물의 얼굴·목·가슴을 가로질러 드리움.
-어둡다는 것은 회색이라는 뜻이 아님(중요): 인물을 어둡게 유지한다고 색을 빼앗으면 안 됨. 어두운 부분은 풍부한 따뜻한 갈색·호박색·짙은 자주빛이며, 절대 잿빛 회색이나 탈색된 무채색, 차가운 회색 기미가 아님. 피부는 따뜻한 촛불 아래 살아 있는 살결로 읽혀야 하고 그 아래 피가 흐르는 것처럼 보여야 함. 어두운 방 안에 앉아 있는 사람이지, 시체나 유령이나 흑백사진이 아님.
-재질 렌더링: 어떤 옷이든 그 천을 설득력 있게 표현 — 분명한 무게감과 자연스러운 중력 주름, 몸을 따라 흐르는 드레이프와 접힘, 읽히는 표면 질감(짜임·광택 또는 무광), 가장자리와 주름에 걸리는 빛. 각 의상이 특정 천(두꺼운 삼베, 빳빳한 린넨, 부드러운 실크, 비치는 오간자 등)으로 읽히게 하고 특정 천을 강요하지 말 것. 천은 늘 실제 무게·구조·주름을 지니며 밋밋하고 생기 없는 드레이프가 아님.
-색: 뮤트한 저채도 럭셔리 팔레트 — 더스티 네이비, 웜 아이보리, 월넛 브라운, 앤티크 골드, 뮤트 로즈, 딥 차콜.
-질감: 은은한 한지 결 + 고급 필름 그레인.
-무드: 조용한 럭셔리, 절제, 은밀, 시적, 몰입감.
-피할 것: 잿빛 회색 피부, 탈색된 시체 같은 피부, 생기 없는 창백한 얼굴, 차가운 회색 색조, 흑백 렌더링, 인물만 밝게 뜨는 것, 오려붙인 느낌, 선이 사라지는 것, 수채화풍, 에어브러시, 3D.`;
+const KO_STYLE = `프리미엄 한국 BL 에디토리얼 만화 일러스트, 깔끔한 한국 웹툰 화풍 — 선명한 디지털 선화, 플랫 컬러 채움, 페인터리한 블렌딩 최소~없음. 유화 아님, 수채화 워시 아님, 탁하거나 뿌연 렌더링 아님.
+선(핵심): 모든 형태를 깔끔하고 자신감 있는 붓 먹선 외곽선으로 정의 — 적당한 굵기 변화(과하지 않게), 선 끝이 가늘게 빠짐. 선은 늘 색 위에 또렷하게 올라앉아 완전히 보임. 순수 블랙이 아닌 차콜 먹색. 특히 눈과 눈썹 주변: 부드럽고 얇고 편안한 선 — 인상 쓴 것처럼 보이는 무겁고 짙은 획 금지.
+채색: 플랫 웹툰 셀 채색, 하드엣지 그림자 형태만 — 표면당 2~3개의 깔끔한 플랫 그림자 톤, 부드러운 그라데이션·에어브러시 블렌딩 없음, 이미지 전체에 깔린 먹 워시 없음. 배경도 인물과 같은 플랫 셀 스타일로 — 같은 깔끔한 선, 같은 플랫 그림자 형태. 선명한 전경 뒤에 부드러운 페인터리 배경 금지.
+피부: 매트, 빛을 받으면 따뜻한 꿀빛 호박색, 그늘은 따뜻한 적갈색 — 플랫 셀 톤이지 블렌딩된 그라데이션 아님. 고른 안색, 기본 볼 홍조 없음.
+조명: 어두운 촛불 실내, 인물과 배경이 하나의 따뜻하고 어두운 톤으로 통일되되 그림자 형태는 깔끔하고 플랫하게 유지 — 뿌옇거나 흩어지지 않음.
+명도: 인물이 배경보다 밝거나 스포트라이트 받으면 안 됨 — 피부·의상 어디에도 순백색·근백색 없음, 가장 밝은 부분도 따뜻한 중간 명도, 완전한 밝기는 오직 촛불 불꽃에만. 인물이 장면 앞에 떠 있지 않고 장면 안에 앉아 있어야 함.
+색: 뮤트한 저채도 럭셔리 팔레트 — 더스티 네이비, 웜 아이보리, 월넛 브라운, 앤티크 골드, 뮤트 로즈, 딥 차콜, 웜 베이지. 플랫 컬러 필드지 페인터리한 혼색 아님.
+재질: 의상 천은 깔끔한 플랫 셰이딩 주름으로 — 무게와 드레이프가 깔끔한 그림자 형태로 읽힘, 블렌딩된 광택 아님. 각 의상이 자기만의 천으로 읽히게 하고 특정 천을 강요하지 말 것.
+질감: 아주 옅은 한지 결만, 무거운 필름 그레인·부드러운 발광 없음.
+무드: 조용한 럭셔리, 세련됨, 따뜻함, 반겨주는 느낌 — 음침하거나 위협적이지 않음.
+피할 것: 노려보는 눈, 인상 쓴 눈썹, 위협적인 시선, 날카롭고 강렬한 눈빛, 유화 질감, 수채화 블렌딩, 부드러운 에어브러시 그라데이션, 뿌옇게 흩어진 렌더링, 페인터리하게 탁한 혼색, 잿빛 회색 피부, 인물만 밝게 뜨거나 배경보다 밝은 것, 림라이트·백라이트로 인물 분리, 밋밋하게 균일한 조명, 사라진 선, 망가 스크린톤, HDR, 네온.`;
 
 const KO_CHARS = {
   "하진 (명리)": `야화기방의 마스코트, 젊은 동양 남성 — 서늘한 귀족적 신비와 다정한 온기가 섞인 얼굴.
@@ -326,7 +313,7 @@ const KO_EXPR = {
   "차분한 자신감 ★기본":"차분하고 조용히 자신감 있는 표정. 서늘한 거리감과 옅은 온기를 함께 지님. 입술은 편안히 다물려 있음",
   "은은한 미소":"희미하고 은은한 입 다문 미소 — 입술은 다문 채 입꼬리만 아주 살짝 올라가고 이는 보이지 않음, 눈이 따뜻하게 부드러워짐. 절제된 표정 사이로 조용한 다정함이 비침",
   "나른한 웃음":"나른하고 느긋한 입 다문 미소 — 무겁게 반쯤 감긴 눈, 다문 입꼬리가 천천히 의미심장하게 휘어지고 이는 보이지 않음. 서두르지 않고 관능적, 혼자만 아는 무언가에 재밌어하는 듯",
-  "나른하게 입 벌린":"나른하고 몽롱한 표정에 입술이 부드럽게 살짝 벌어짐 — 무겁게 반쯤 감긴 졸린 눈, 초점 없이 느린 시선, 입이 편안하고 관능적으로 살짝 벌어짐(입술만 벌어지고 이를 앙다물거나 활짝 웃지 않음), 힘이 빠진 숨결, 무방비하고 나른한 관능",
+  "나른하게 입 벌린":"나른하고 졸린 표정에 입술이 아주 살짝만 벌어짐 — 입술 사이로 아주 작은 틈, 편안하고 관능적이며 막 숨을 쉬거나 말하려는 듯. 눈은 무겁게 반쯤 감겼지만 어두운 눈동자가 정면으로 보는 사람을 응시함(졸린 듯한 직시). 중요: 입술은 아주 조금만 벌어지고 — 앞니가 보이지 않음, 이가 전혀 보이지 않음, 입을 크게 벌리지 않음, 활짝 웃지 않음, 헐떡이지 않음. 그저 가장 얇은 틈만. 무방비하고 졸리고 조용히 관능적",
   "싱긋 웃음":"가볍고 장난스러운 입 다문 미소 — 입술은 다문 채 이는 보이지 않고, 한쪽 입꼬리만 살짝 더 올라가 짓궂게 휘어짐. 눈이 따뜻하고 장난스럽게 접힘",
   "부끄러움 (볼 빨개짐)":"당황하고 수줍어하는 표정 — 볼·귀·눈 밑까지 새빨갛게 물들고, 시선을 피하며, 입술을 꾹 다묾. 서늘한 여유가 무너져 부끄러움이 드러남",
   "당황 (땀)":"허를 찔린 듯 당황한 표정 — 눈이 살짝 커지고 눈썹이 올라감. 관자놀이로 땀 한 방울이 흐르고, 입이 어색하게 벌어짐. 평소의 여유가 완전히 무너짐",
@@ -382,7 +369,8 @@ const KO_POSES = {
   "부채 든 포즈":"접선을 반쯤 펼쳐 얼굴 아래를 가린 채 시선만 보냄",
   "돌아보는 순간":"어깨 너머로 막 돌아보는 찰나, 머리카락이 살짝 흩날림",
   "차 따르는 손":"찻주전자를 기울여 차를 따르는 손, 시선은 찻잔에",
-  "기대어 앉음":"기둥이나 방석에 나른하게 기대어 앉은 자세"
+  "기대어 앉음":"기둥이나 방석에 나른하게 기대어 앉은 자세",
+  "술 따르며 눈맞춤":"손님에게 술을 따름 — 한 손으로 화려한 주전자를 기울여 다른 손에 든 작은 잔에 가는 물줄기를 따르고, 두 손과 따르는 동작은 잔 근처 아래쪽에 둠. 고개는 잔 쪽으로 자연스럽고 편안하게 살짝 숙인 각도를 유지(비틀거나 억지로 꺾지 않음), 대신 눈만 들어 — 반쯤 감긴 눈꺼풀 사이로 곁눈질하듯 위로, 어두운 눈동자가 정면의 보는 사람/손님을 똑바로 올려다봄. 차분하고 의미심장하며 은은히 유혹적인 눈빛. 목은 편안하고 자연스럽게, 어색한 고개 돌림 없음"
 };
 
 const KO_COMPS = {
@@ -534,7 +522,7 @@ const EXPRESSIONS = {
   "차분한 자신감 ★기본":"a composed, quietly confident expression carrying both cool distance and a trace of gentle warmth, lips relaxed and closed",
   "은은한 미소":"a faint, subtle CLOSED-LIP smile — the corners of the mouth barely lifted with the lips staying gently closed and NO teeth showing, the eyes softening warmly, a quiet gentle affection showing through the composure",
   "나른한 웃음":"a languid, lazy CLOSED-LIP smile — heavy half-lidded eyes, the closed mouth curving slowly and knowingly with NO teeth showing, unhurried and sensual, as if amused by something private",
-  "나른하게 입 벌린":"a languid, dazed expression with the lips softly PARTED — heavy half-lidded drowsy eyes, a slow unfocused gaze, the mouth slightly open in a relaxed sensual way (lips parted but teeth not clenched or grinning), loose held breath, an unguarded drowsy sensuality",
+  "나른하게 입 벌린":"a languid, drowsy expression with the lips only JUST BARELY parted — a small soft gap between the lips, relaxed and sensual, as if about to breathe or speak. The eyes are heavy-lidded and half-closed but the DARK IRISES look STRAIGHT AT THE VIEWER, a direct sleepy gaze meeting the camera. CRITICAL: the lips part only a tiny amount — NO front teeth showing, NO teeth visible at all, NO wide open mouth, NO grin, NO gasp; just the softest sliver of an opening. Unguarded, drowsy, quietly sensual",
   "싱긋 웃음":"a light playful CLOSED-LIP smile — the lips stay closed with NO teeth showing, one corner of the mouth pulling up a little higher than the other in a small mischievous curve, the eyes crinkling warmly with playful teasing",
   "부끄러움 (볼 빨개짐)":"a flustered, bashful expression — the cheeks, ears and the skin under the eyes flushing vividly red, eyes darting away from the viewer, lips pressed together, the cool composure cracking into shy embarrassment",
   "당황 (땀)":"a flustered, caught-off-guard expression — eyes slightly widened, brows drawn up, a single bead of sweat sliding down the temple, the mouth parted awkwardly, the usual composure completely undone",
