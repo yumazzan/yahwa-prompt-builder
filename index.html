@@ -41,6 +41,11 @@
   button.act:hover{background:var(--accent);} button.ghost{background:transparent; color:var(--plum); border:1px solid var(--plum);}
   button.mini{font-size:11px; padding:5px 10px;}
   .toggle{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; cursor:pointer;}
+  .tabs{display:flex; gap:8px; margin:0 0 18px;}
+  .tab{padding:9px 20px; border:1px solid var(--line); border-radius:10px; background:#fff;
+    font-size:13px; font-weight:700; color:var(--plum-soft); cursor:pointer; transition:.15s; user-select:none;}
+  .tab:hover{border-color:var(--plum-soft);}
+  .tab.on{background:var(--plum); color:#fff; border-color:var(--plum);}
   .foot{font-size:11px; color:var(--plum-soft); text-align:center; margin-top:18px;}
   .savebar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;}
   .costName{font-size:11px; color:var(--gold); font-weight:700; margin-top:8px;}
@@ -59,6 +64,13 @@
 <div class="wrap">
   <h1>야화기방 — 프롬프트 조립기 v14 🌙</h1>
   <p class="sub">구도·포즈를 프롬프트 맨 앞에 배치(정면/측면·가중치) · 눈동자·체형 · 갓/상투 · 저장+로그</p>
+
+  <div class="tabs">
+    <div class="tab on" id="tab-image" onclick="setMode('image')">🖼 이미지</div>
+    <div class="tab" id="tab-video" onclick="setMode('video')">🎬 영상 (모션)</div>
+  </div>
+
+  <div id="imageMode">
 
   <!-- STYLE FIXED (이제 저장됨) -->
   <div class="card">
@@ -196,13 +208,73 @@
     <p class="hint" id="koNote" style="display:none; margin-top:6px;">GPT·제미나이는 다국어 인코더라 한국어를 잘 읽습니다. 다만 <b>SeaArt·SDXL·Flux·미드저니</b>는 영어가 더 정확하니 위의 영문본을 쓰세요.</p>
   </div>
 
+  </div><!-- /imageMode -->
+
+  <div id="videoMode" style="display:none;">
+    <div class="card">
+      <h2><span class="badge fixed">고정</span> 🎬 영상 규칙 <span class="hint" style="display:inline">(이미지→영상 · 자동 포함)</span></h2>
+      <p class="hint">완성된 <b>이미지를 업로드</b>하고 아래 프롬프트를 넣으세요. 새로 그리지 않고 <b>모션만</b> 얹습니다. 카메라는 완전히 고정됩니다.</p>
+      <textarea id="vidRuleBox" rows="7"></textarea>
+      <div class="savebar">
+        <button class="act ghost mini" onclick="resetVidRule()">기본값으로 되돌리기</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge var">가변</span> ① 인물 모션 <span class="hint" style="display:inline">(여러 개 선택 가능 · 아주 미세하게)</span></h2>
+      <div class="row" id="vidSubjChips"></div>
+      <textarea id="vidSubjBox" rows="3" placeholder="선택하거나 직접 작성"></textarea>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge var">가변</span> ② 배경·분위기 모션 <span class="hint" style="display:inline">(촛불·연기·꽃잎 등)</span></h2>
+      <div class="row" id="vidAmbChips"></div>
+      <textarea id="vidAmbBox" rows="3" placeholder="선택하거나 직접 작성"></textarea>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge var">③ 속도 · 길이</span></h2>
+      <label>모션 속도</label>
+      <div class="row" id="vidSpeedChips"></div>
+      <textarea id="vidSpeedBox" rows="1"></textarea>
+      <label>길이 · 루프</label>
+      <div class="row" id="vidLoopChips"></div>
+      <textarea id="vidLoopBox" rows="1"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="outbar">
+        <h2 style="margin:0;"><span class="badge">출력</span> ④ 영상 프롬프트</h2>
+      </div>
+      <div class="out" id="vidOutput"></div>
+      <div class="outbar" style="margin-top:12px;">
+        <span class="stat" id="vidStat"></span>
+        <button class="act" id="vidCopyBtn" onclick="copyVid()">복사</button>
+      </div>
+
+      <label style="margin-top:14px;">영상 네거티브 <span class="hint" style="display:inline">(Runway·Kling 등 네거티브 칸이 있는 툴용)</span></label>
+      <div class="out" id="vidNegOutput" style="max-height:none; font-size:11px;">camera movement, camera pan, zoom, dolly, tracking shot, parallax, shaking, handheld, style change, restyle, redraw, different art style, changing face, changing hair, changing outfit, morphing, warping, distorted anatomy, extra limbs, flickering, blinking colors, color shift, brightness change, fast motion, sudden movement, jump cut, added objects, added people, text, watermark</div>
+      <div class="outbar" style="margin-top:8px;">
+        <span class="stat" style="color:var(--plum-soft); font-size:11px;">카메라 이동 · 화풍 변형 방지</span>
+        <button class="act ghost mini" id="vidNegCopyBtn" onclick="copyVidNeg()">네거티브 복사</button>
+      </div>
+
+      <label class="toggle" style="margin-top:18px;"><input type="checkbox" id="vidKoView"> 🇰🇷 한국어 영상 프롬프트</label>
+      <div class="out" id="vidKoOutput" style="display:none; max-height:300px; font-size:12px; line-height:1.7;"></div>
+      <div class="outbar" id="vidKoBar" style="display:none; margin-top:8px;">
+        <span class="stat" style="color:var(--plum-soft); font-size:11px;">Kling·Hailuo 등 한국어 지원 툴에서 사용 가능</span>
+        <button class="act" id="vidKoCopyBtn" onclick="copyVidKo()">한국어 복사</button>
+      </div>
+    </div>
+  </div><!-- /videoMode -->
+
   <p class="foot">모든 저장은 이 브라우저에 남습니다 · 그림체/캐릭터는 항상 마지막 저장본으로 복원됩니다 🌙</p>
 </div>
 
 <script>
 // ===== 기본 그림체 =====
 const DEFAULT_STYLE =
-`Premium Korean BL editorial manhwa illustration, CLEAN KOREAN WEBTOON STYLE — crisp digital linework, flat color fill, minimal-to-no painterly blending. Not an oil painting, not a watercolor wash, not muddy or smoky rendering. LINE (core): every form defined by a clean, confident ink-brush outline — moderate line-weight variation (not excessive), tapering at line ends. Lines stay crisp and fully visible on top of color at all times. Charcoal-ink black, not pure black — a crisp, FULLY OPAQUE ink outline on every edge, sitting cleanly on top of the flat color with ZERO blending into it. Around the eyes and brows specifically: soft, thin, relaxed linework — no heavy dark strokes that read as a scowl. RENDERING (critical): STRICT flat cel-shading only. Each surface (skin, hair, fabric) uses just 2-3 FLAT color tones — base tone, one shadow tone, one optional deep-shadow tone. Every shadow shape has a CLEAN, HARD, crisp edge — like a vector cutout — never a soft gradient, never a blended/blurred edge, never scattered dappled spots. NO airbrushing, NO soft blending, NO watercolor bleed, NO patchy/blotchy overlaid texture anywhere on the clothing or skin, NO ink-wash atmosphere layered over the image. Background rendered in the same flat cel style as the figure — same clean lines, same flat shadow shapes, no soft painterly background behind a sharp foreground. SUNLIGHT THROUGH TREES (fix): render any plum-tree or window dappled light as a SMALL NUMBER of large, clean-edged flat shadow shapes cast on the ground and robe — NOT dozens of small soft scattered spots. Think 3-5 bold graphic shadow patches with sharp silhouette edges, not a mottled/speckled texture. SKIN: matte, warm honey-amber in light, warm reddish-brown in shadow — flat cel tones, not blended gradients. Even complexion, no default blush. EXCEPTION (character priority): if a specific character's own face description states a different skin tone or undertone (e.g. a cooler, paler, porcelain-white complexion), follow THAT character's own skin description instead — character-specific skin instructions always override this general warm-amber default. LIGHTING: dim candlelit interior, unified warm dark grade between figure and background, but shadow shapes stay CLEAN AND FLAT, not smoky or diffused. VALUE: the figure must not be brighter or more spotlit than the background, and nothing should look flatly overexposed or blown-out — but this is an EXPOSURE rule, not a hue rule. If a character's skin or a costume's fabric is specifically designated ivory, snow-white, pale silver or porcelain, render that surface as its own true pale/light value, simply dimmed and warmed slightly by the ambient candlelight — do NOT default it to navy, charcoal or black just to force a "mid-tone." Reserve only the single most saturated pure-bright highlight for the candle flames themselves; everything else, including pale fabrics and pale skin, should read as a gently dimmed version of its OWN true color, never swapped for a darker substitute color. COLOR: clean flat color fills in a muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige — applied as FLAT FIELDS, not blended or muddied together at the edges. This palette list is a general TONE guide only, NOT a replacement for any costume's own stated palette — when a costume preset specifies its own colors (e.g. ivory, pale grey-blue, jade, crimson, silver-white), render THAT costume's exact stated palette; never default or shift it toward navy/charcoal/black. MATERIAL: garment fabric rendered with clear flat-shaded folds — weight and drape readable through clean shadow shapes, not blended sheen; let each outfit read as its own cloth, do not force any one fabric type. TEXTURE (reduce): remove fine film grain and ink-wash atmosphere entirely. Keep the image texture-free and clean — pure flat color + linework only, no grain overlay, no soft haze layered on top of the color, no soft glow. MOOD: quiet luxury, refined, warm, welcoming — not brooding, not menacing. Avoid: glaring eyes, scowling brows, intimidating stare, sharp/intense gaze, watercolor look, oil painting texture, soft airbrushed gradients, blotchy/patchy shading, scattered dappled light spots, film grain, ink wash haze, painterly muddy color mixing, blurred edges, muddy overlapping brushstrokes, smoky diffused rendering, ashen grey skin, the figure spotlit or brighter than the background, rim light/backlight separating subject, flat even lighting, dissolved linework, manga screentones, HDR, neon.`;
+`Premium Korean BL editorial manhwa illustration, CLEAN KOREAN WEBTOON STYLE — crisp digital linework, flat color fill, minimal-to-no painterly blending. Not an oil painting, not a watercolor wash, not muddy or smoky rendering. LINE (core): every form defined by a clean, confident ink-brush outline — moderate line-weight variation (not excessive), tapering at line ends. Lines stay crisp and fully visible on top of color at all times. Charcoal-ink black, not pure black — a crisp, FULLY OPAQUE ink outline on every edge, sitting cleanly on top of the flat color with ZERO blending into it. Around the eyes and brows specifically: soft, thin, relaxed linework — no heavy dark strokes that read as a scowl. RENDERING (critical): STRICT flat cel-shading only. Each surface (skin, hair, fabric) uses just 2-3 FLAT color tones — base tone, one shadow tone, one optional deep-shadow tone. Every shadow shape has a CLEAN, HARD, crisp edge — like a vector cutout — never a soft gradient, never a blended/blurred edge, never scattered dappled spots. NO airbrushing, NO soft blending, NO watercolor bleed, NO patchy/blotchy overlaid texture anywhere on the clothing or skin, NO ink-wash atmosphere layered over the image. Background rendered in the same flat cel style as the figure — same clean lines, same flat shadow shapes, no soft painterly background behind a sharp foreground. SUNLIGHT THROUGH TREES (fix): render any plum-tree or window dappled light as a SMALL NUMBER of large, clean-edged flat shadow shapes cast on the ground and robe — NOT dozens of small soft scattered spots. Think 3-5 bold graphic shadow patches with sharp silhouette edges, not a mottled/speckled texture. SKIN: matte, warm honey-amber in light, warm reddish-brown in shadow — flat cel tones, not blended gradients. Even complexion, no default blush. LIGHTING: dim candlelit interior, unified warm dark grade between figure and background, but shadow shapes stay CLEAN AND FLAT, not smoky or diffused. VALUE: the figure must not be brighter or more spotlit than the background — no part of the skin or clothing is pure white or near-white; the brightest values stay warm and mid-toned, with full brightness reserved for the candle flames themselves, so the figure sits into the scene rather than floating in front of it. COLOR: clean flat color fills in a muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige — applied as FLAT FIELDS, not blended or muddied together at the edges. MATERIAL: garment fabric rendered with clear flat-shaded folds — weight and drape readable through clean shadow shapes, not blended sheen; let each outfit read as its own cloth, do not force any one fabric type. TEXTURE (reduce): remove fine film grain and ink-wash atmosphere entirely. Keep the image texture-free and clean — pure flat color + linework only, no grain overlay, no soft haze layered on top of the color, no soft glow. MOOD: quiet luxury, refined, warm, welcoming — not brooding, not menacing. Avoid: glaring eyes, scowling brows, intimidating stare, sharp/intense gaze, watercolor look, oil painting texture, soft airbrushed gradients, blotchy/patchy shading, scattered dappled light spots, film grain, ink wash haze, painterly muddy color mixing, blurred edges, muddy overlapping brushstrokes, smoky diffused rendering, ashen grey skin, the figure spotlit or brighter than the background, rim light/backlight separating subject, flat even lighting, dissolved linework, manga screentones, HDR, neon.`;
 
 // ===== 의상 10종 (레퍼런스 기반 질감·실루엣 강화) =====
 const COSTUMES = {
@@ -279,10 +351,10 @@ const COMPS = {
 const KO_STYLE = `프리미엄 한국 BL 에디토리얼 만화 일러스트, 깔끔한 한국 웹툰 화풍 — 선명한 디지털 선화, 플랫 컬러 채움, 페인터리한 블렌딩 최소~없음. 유화 아님, 수채화 워시 아님, 탁하거나 뿌연 렌더링 아님.
 선(핵심): 모든 형태를 깔끔하고 자신감 있는 붓 먹선 외곽선으로 정의 — 적당한 굵기 변화(과하지 않게), 선 끝이 가늘게 빠짐. 선은 늘 색 위에 또렷하게 올라앉아 완전히 보임. 순수 블랙이 아닌 차콜 먹색 — 모든 가장자리에 깔끔하고 완전히 불투명한 먹선이 플랫 컬러 위에 올라앉아 색과 전혀 섞이지 않음. 특히 눈과 눈썹 주변: 부드럽고 얇고 편안한 선 — 인상 쓴 것처럼 보이는 무겁고 짙은 획 금지.
 채색(핵심): 엄격한 플랫 셀 셰이딩만. 각 표면(피부·머리·천)은 2~3개의 플랫 컬러 톤만 사용 — 베이스 톤, 그림자 톤 하나, 선택적으로 짙은 그림자 톤 하나. 모든 그림자 형태는 벡터로 오려낸 듯 깔끔하고 딱 떨어지는 하드엣지 — 부드러운 그라데이션, 뭉개진/흐려진 경계, 흩뿌려진 얼룩덜룩한 반점 절대 없음. 에어브러시 없음, 부드러운 블렌딩 없음, 수채화 번짐 없음, 옷이나 피부 어디에도 얼룩덜룩하게 덧바른 텍스처 없음, 이미지 위에 깔린 먹 워시 없음. 배경도 인물과 같은 플랫 셀 스타일로 — 같은 깔끔한 선, 같은 플랫 그림자 형태. 선명한 전경 뒤에 부드러운 페인터리 배경 금지. 나무 사이 햇빛(수정): 매화나무나 창문으로 든 얼룩진 빛은 바닥과 옷 위에 소수의 크고 경계가 뚜렷한 플랫 그림자 도형으로 표현 — 작고 부드러운 반점 수십 개가 아니라, 실루엣 경계가 날카로운 3~5개의 큼직한 그래픽 그림자 덩어리. 얼룩덜룩한 점묘 텍스처 금지.
-피부: 매트, 빛을 받으면 따뜻한 꿀빛 호박색, 그늘은 따뜻한 적갈색 — 플랫 셀 톤이지 블렌딩된 그라데이션 아님. 고른 안색, 기본 볼 홍조 없음. 예외(캐릭터 우선): 특정 캐릭터의 얼굴 묘사에 다른 피부톤(예: 더 차갑고 창백한 백자 피부)이 명시돼 있으면, 이 기본 웜톤 규칙보다 그 캐릭터의 피부 묘사를 우선 적용할 것.
+피부: 매트, 빛을 받으면 따뜻한 꿀빛 호박색, 그늘은 따뜻한 적갈색 — 플랫 셀 톤이지 블렌딩된 그라데이션 아님. 고른 안색, 기본 볼 홍조 없음.
 조명: 어두운 촛불 실내, 인물과 배경이 하나의 따뜻하고 어두운 톤으로 통일되되 그림자 형태는 깔끔하고 플랫하게 유지 — 뿌옇거나 흩어지지 않음.
-명도: 인물이 배경보다 밝거나 스포트라이트 받으면 안 되고, 어디도 날아가거나 과다노출처럼 밋밋하게 보이면 안 됨 — 다만 이는 '노출' 규칙이지 '색상' 규칙이 아님. 캐릭터의 피부나 의상이 아이보리·눈처럼 하얀색·은백색·백자색으로 구체적으로 지정되어 있다면, 그 표면은 촛불빛에 살짝 데워지고 살짝 어두워진 정도로 자기 본연의 밝고 옅은 톤을 유지해야 하며, '중간톤을 맞추기 위해' 네이비·차콜·검정으로 바뀌면 안 됨. 가장 순수하고 채도 높은 하이라이트는 오직 촛불 불꽃에만 남겨두고, 옅은 천이나 옅은 피부를 포함한 나머지 모든 것은 자기 고유 색이 살짝 어두워진 정도로 읽혀야지, 더 어두운 다른 색으로 대체되면 안 됨.
-색: 뮤트한 저채도 럭셔리 팔레트의 깔끔한 플랫 컬러 채움 — 더스티 네이비, 웜 아이보리, 월넛 브라운, 앤티크 골드, 뮤트 로즈, 딥 차콜, 웜 베이지 — 플랫 필드로 칠하고 가장자리에서 섞이거나 탁해지지 않음. 이 팔레트는 전반적인 톤 가이드일 뿐, 개별 의상 프리셋에 명시된 고유 팔레트를 대체하지 않음 — 의상 프리셋에 자기만의 색(예: 아이보리, 옅은 그레이블루, 비취, 다홍, 은백색)이 지정돼 있으면 반드시 그 의상의 팔레트 그대로 렌더링하고, 네이비/차콜/검정 쪽으로 임의로 바꾸지 말 것.
+명도: 인물이 배경보다 밝거나 스포트라이트 받으면 안 됨 — 피부·의상 어디에도 순백색·근백색 없음, 가장 밝은 부분도 따뜻한 중간 명도, 완전한 밝기는 오직 촛불 불꽃에만. 인물이 장면 앞에 떠 있지 않고 장면 안에 앉아 있어야 함.
+색: 뮤트한 저채도 럭셔리 팔레트의 깔끔한 플랫 컬러 채움 — 더스티 네이비, 웜 아이보리, 월넛 브라운, 앤티크 골드, 뮤트 로즈, 딥 차콜, 웜 베이지 — 플랫 필드로 칠하고 가장자리에서 섞이거나 탁해지지 않음.
 재질: 의상 천은 깔끔한 플랫 셰이딩 주름으로 — 무게와 드레이프가 깔끔한 그림자 형태로 읽힘, 블렌딩된 광택 아님. 각 의상이 자기만의 천으로 읽히게 하고 특정 천을 강요하지 말 것.
 질감(제거): 미세 필름 그레인과 먹 워시 분위기를 완전히 제거. 이미지는 텍스처 없이 깔끔하게 — 순수한 플랫 컬러 + 선화만, 그레인 오버레이 없음, 색 위에 얹힌 부드러운 안개 없음, 부드러운 발광 없음.
 무드: 조용한 럭셔리, 세련됨, 따뜻함, 반겨주는 느낌 — 음침하거나 위협적이지 않음.
@@ -297,7 +369,7 @@ const KO_CHARS = {
 눈가에 붉은 화장 — 눈꼬리와 눈꺼풀을 따라 은은한 다홍빛이 번짐. 관능적이고, 먹색 눈과 강하게 대비됨.
 세미아치형 짙은 눈썹(눈썹 끝이 살짝 올라감). 길고 가는 콧대에 작고 단정한 코끝. 가로로 넓은 입술 — 얇은 M자 윗입술 + 살짝 도톰한 아랫입술.
 그레이블랙 머리색. 살아 있는 따뜻한 피부(중요): 복숭아빛 언더톤의 밝은 피부를 촛불의 따뜻한 호박빛 아래에서 렌더링 — 빛을 받은 면은 따뜻한 꿀빛 호박색, 그늘은 따뜻한 적갈색. 절대 회색이나 잿빛이 아님. 피부 아래 혈색이 비침: 볼·귓바퀴·코끝·눈 안쪽 모서리에 은은한 장밋빛 홍조, 입술은 따뜻한 색을 유지. 어둡고 저조도이지만 살아 있고 따뜻함이 가득 — 창백하거나 핏기 없거나 시체 같아 보이면 절대 안 됨.`,
-  "설온 (雪溫)": `눈에 띄게 잘생긴 20대 초반의 젊은 조선 남자 — 서늘한 "겨울 백매화" 미남. 우아하고 세련됐지만 확실히 남성적이며, 아름다운 청년이되 여성적이거나 소녀 같거나 중성적으로 곱상하지 않음. 귀엽지 않고 잘생김. 소년이 아니라 남자. 얼굴: 길고 갸름한 얼굴에 갸름하게 좁아지는 샤프한 V라인 턱선과 뾰족하고 또렷한 턱끝 — 갸름하지만 실제 골격이 뚜렷하고 부드럽거나 여리지 않음. 넓고 차분한 이마, 살짝 도드라져 서늘한 인상을 더하는 높은 광대뼈. 눈: 길고 좁은 아몬드형에 눈꼬리가 부드럽게 처지고 반쯤 감긴 눈 — 차분하고 서늘하며 살짝 내성적인 눈빛에 그 아래 조용한 다정함, 다만 눈매는 확실히 남성적이며 사슴 같거나 소녀 같지 않음. 눈동자: 아주 옅고 밝은 그레이 — 빛나는 라이트 실버그레이에 희미한 아이스블루 언더톤, 부드럽고 거의 반투명한 창백한 겨울 하늘 같으며 서늘하고 인상적. 눈가 메이크업: 눈꼬리와 눈꺼풀 위쪽을 따라 은은하지만 또렷한 다홍빛~주홍빛 화장이 번져 있음 — 옅은 홍조와는 별개의 선명한 붉은 아이라인/섀도로, 창백하고 서늘한 눈동자와 강하게 대비되어 관능적이고 인상적인 포인트를 줌. 짙고 또렷하지만 갸름하게 정돈된 눈썹 — 부드러운 아치를 그리며 눈꼬리 쪽으로 살짝 치켜 올라감, 남성적이고 눈에 가깝게 자리함(가늘거나 흐리지 않음). 짙은 속눈썹. 곧고 세련된 남성적인 코, 적당히 높은 콧대와 단정하고 갸름한 코끝. 또렷한 입, 살짝 도톰한 아랫입술을 지닌 균형 잡힌 입매 — 평소엔 차분하고 편안하게 자연스레 다물려 있지만, 입꼬리 한쪽이 슬쩍 올라가며 여유롭고 능글맞은 미소를 짓기도 함. 전체 인상은 서늘하고 우아하며 조용히 따뜻한 청년 — 침착함이 무너지면 선명하게 붉어지는. 세련되고 잘생겼으며 남성적인 턱과 체격을 지녔고, 예쁜 소녀가 아님. 피부: 눈처럼 새하얗고 서늘한 톤이 도는 백자 피부(쿨 아이보리 베이스), 아주 매끄럽고 투명함 — 창백하되 절대 회색이거나 시체 같지 않고, 피부 아래로 은은한 혈색이 비쳐 살아있음. 평상시에도 눈밑과 코끝, 윗볼을 따라 옅은 장밋빛 홍조가 은은히 감돌고 — 그리고 최대 특징: 당황하면 귀·목·눈밑이 선명하게 붉어짐. 따뜻한 촛불 아래에서도 이 서늘하고 창백한 톤은 유지되어야 하며(다른 인물들처럼 꿀빛 호박색으로 데워지지 않음), 결코 잿빛이거나 핏기 없이 죽어 보이면 안 됨.`,
+  "설온 (雪溫)": `눈에 띄게 잘생긴 20대 초반의 젊은 조선 남자 — 서늘한 "겨울 백매화" 미남. 우아하고 세련됐지만 확실히 남성적이며, 아름다운 청년이되 여성적이거나 소녀 같거나 중성적으로 곱상하지 않음. 귀엽지 않고 잘생김. 소년이 아니라 남자. 얼굴: 길고 우아한 얼굴에 깔끔하고 또렷한 남성적 턱선과 단단한 턱끝 — 세련됐지만 실제 골격이 있고 부드럽거나 여리지 않음. 넓고 차분한 이마, 낮고 은은한 광대. 눈: 길고 좁은 아몬드형에 눈꼬리가 부드럽게 처지고 반쯤 감긴 눈 — 차분하고 서늘하며 살짝 내성적인 눈빛에 그 아래 조용한 다정함, 다만 눈매는 확실히 남성적이며 사슴 같거나 소녀 같지 않음. 눈동자: 아주 옅고 밝은 그레이 — 빛나는 라이트 실버그레이에 희미한 아이스블루 언더톤, 부드럽고 거의 반투명한 창백한 겨울 하늘 같으며 서늘하고 인상적. 짙고 또렷한 눈썹 — 곧고 깔끔하며 남성적이고 눈에 가깝게 자리함(얇거나 흐리지 않음). 짙은 속눈썹. 곧고 세련된 남성적인 코, 적당히 높은 콧대와 단정한 코끝. 또렷한 입, 너무 도톰하지도 얇지도 않은 입술, 차분하고 편안하게 자연스레 다물려 있음. 전체 인상은 서늘하고 우아하며 조용히 따뜻한 청년 — 침착함이 무너지면 선명하게 붉어지는. 세련되고 잘생겼으며 남성적인 턱과 체격을 지녔고, 예쁜 소녀가 아님. 피부: 웜 아이보리 베이스에 복숭아빛 언더톤의 백자 피부, 매우 매끄러움, 평상시에도 눈밑에 은은한 붉은기(아래 속눈썹 라인과 윗볼을 따라 옅은 장밋빛) — 그리고 최대 특징: 당황하면 귀·목·눈밑이 선명하게 붉어짐. 따뜻한 촛불 아래 렌더링되어 따뜻하고 살아있으며, 회색이거나 창백하게 죽지 않음.`,
   "만석 (일꾼)": `거칠고 남성적인 젊은 조선 일꾼, 야화기방의 성실하고 충직한 일손. 확실히 28~29세 — 젊고 건강하지만 예쁘지 않고, 곱상하지 않고, 정돈된 꽃미남 아이돌 얼굴이 아님. 아름다운 남자가 아니라 날것의 거친 미남. 젊음(여전히 중요): 매끄럽고 탱탱한 건강한 피부, 이마 주름·팔자주름·눈밑 처짐·거칠게 늙은 인상 없음 — 젊되 단단하고 남성적이며, 부드럽거나 귀엽지 않음. 얼굴형: 길고 각지고 확실히 남성적인 얼굴 — 단단하고 날카롭게 재단된 턱선과 각진 턱끝, 굴곡이 드러나는 납작하고 마른 볼, 강한 골격. 둥글거나 부드럽거나 꽃미남 같지 않고 거칠고 조각적이며 살짝 사나운 방식으로 잘생김. 눈(핵심): 길고 좁은 후드형 반쯤 감긴 눈, 낮은 쌍꺼풀 라인과 살짝 내려간 눈꼬리, 무심하고 살짝 초연한 표정 — 나른하고 서늘하고 무관심한 눈빛. 아주 어두운 눈 — 거의 검정에 가까운 짙은 차콜브라운 눈동자로 거의 블랙으로 읽힘, 아주 작게 수축된 동공과 은은한 삼백안 느낌(홍채 아래 흰자가 살짝 보임)으로 날카롭고 무심한 남성적 시선. 눈은 어둡고 평평하며 밝거나 옅은 갈색이거나 반짝이지 않음 — 작고 어두운 동공, 무겁게 처진 후드 눈꺼풀, 서늘하고 데드팬하되 불친절하진 않음. 눈썹: 짙고 곧고 낮게 눈에 가깝게 자리한 눈썹. 코: 길고 곧고 또렷한 남성적인 코, 높고 곧은 콧대와 살짝 넓고 단단한 코끝, 콧볼이 실제로 있음 — 강하고 살짝 거칠며, 작고 앙증맞은 코가 아님. 입: 가로로 넓은 입, 넓게 벌어지되 다소 얇고 납작한 입술, 곧고 편안한 입매 — 도톰하게 튀어나온 입술이나 작은 큐피드 입이 아님. 희미한 입 다문 미소에만 살짝 휘어지는 넓은 남성적 입. 체격은 거대하고 위압적이지만 얼굴은 그에 밀리지 않을 만큼 강하고 디테일해야 함 — 거칠고 서늘한 남성미 아래 성실하고 선한 남자. 피부: 햇볕에 그을린 건강한 피부에 따뜻한 골든 베이지 언더톤, 매끄럽되 야외 노동으로 살짝 그을린 결, 광대와 코에 노동으로 인한 옅은 홍조, 종종 옅게 땀에 젖음. 수염 없이 깨끗, 주름·흉터 없음.`,
 };
 
@@ -327,7 +399,7 @@ const KO_HAIRS = {
   "흐트러진 반묶음":"느슨하게 반만 올린 머리가 살짝 흐트러짐. 방금 누웠다 일어난 듯한 관능적인 무드",
   "짧은 크롭+이마띠 (만석)":"짧고 중간 길이의 헝클어진 검은 머리, 자연스러운 질감과 두께와 움직임이 풍부함 — 남성적인 머리카락이 이마 위로 느슨하게 흘러내려 얼굴을 감싸고, 살짝 거칠며 깨끗한 땀에 젖어 있음. 이마에 흰 무명 이마띠를 두르고 여러 가닥이 그 위와 주변으로 흘러나옴. 중요: 윗머리에 실제 길이와 볼륨을 살릴 것 — 균일한 버즈컷 아님, 밀어버린 납작한 크롭 아님, 옆을 밀지 않음. 건강하고 숱 많고 자연스러운 남성적인 머리, 젊은 인상",
   "짧은 스포츠컷":"아주 짧은 검은 스포츠컷 — 옆과 뒤는 짧고 단정하게 치고, 윗머리는 살짝 길게 질감을 살림. 깔끔한 헤어라인, 싱그럽고 활동적인 느낌. 상투·긴 머리 없음. 남성적이고 젊은 인상",
-  "은발 긴 생머리 (설온)":"아주 길고 곧은 눈처럼 새하얀 은발/백발을 묶지 않고 풀어 배꼽·허리께까지 매끄럽게 흘러내림, 부드럽고 은은한 광택이 도는 실키한 질감(순백~옅은 은회색, 절대 노랗게 뜨거나 탁하지 않음), 가운데 또는 부드러운 옆가르마로 몇 가닥이 얼굴을 감쌈, 매끈하고 우아함. 남성적이고 세련됨"
+  "흑발 긴 생머리 (설온)":"아주 길고 곧은 칠흑 같은 흑발을 묶지 않고 풀어 배꼽·허리께까지 매끄럽게 흘러내림, 묵직한 실크 광택, 가운데 또는 부드러운 옆가르마로 몇 가닥이 얼굴을 감쌈, 매끈하고 우아함. 남성적이고 세련됨"
 };
 
 const KO_BODY = {
@@ -540,7 +612,7 @@ const HAIRS = {
   "흐트러진 반묶음":"hair in a loosened half-up topknot with strands escaping softly, slightly undone and intimate",
   "짧은 크롭+이마띠 (만석)":"short-to-medium tousled black hair with plenty of natural texture, thickness and movement — masculine strands falling loosely over the forehead and framing the face, slightly wild and damp with clean sweat. A plain white cloth headband (work band) tied around the forehead, several strands escaping over and around it. IMPORTANT: keep real LENGTH and VOLUME on top — NOT a uniform buzzcut, NOT a shaved/flat crop, NOT shaved sides. Healthy, thick, lived-in masculine hair, youthful",
   "짧은 스포츠컷":"very short black sporty crew cut — cropped close and neat on the sides and back, slightly longer and textured on top, clean tidy hairline, fresh and athletic. No topknot, no long strands. Masculine and youthful",
-  "은발 긴 생머리 (설온)":"very long, straight snow-white/silver hair worn loose, falling smoothly all the way down to the navel/waist with a soft silky sheen (pure white to pale silver-grey, never yellowish or dull ash), a center or soft side part framing the face with a few strands, sleek and elegant. Masculine and refined, not tied up"
+  "흑발 긴 생머리 (설온)":"very long, straight jet-black hair worn loose, falling smoothly all the way down to the navel/waist with a heavy silk sheen, a center or soft side part framing the face with a few strands, sleek and elegant. Masculine and refined, not tied up"
 };
 
 // ===== 액세서리 · 오브제 프리셋 =====
@@ -569,8 +641,8 @@ const ACCESSORIES = {
 const SEED_CHARS = {
   "하진 (명리)":{memo:"명리 담당 / 기방 마스코트 / 먹색(거의 블랙) 눈+작은 동공+삼백안 + 붉은 눈가 / 서늘함+다정함", face:
 `A young East Asian man, the mascot of Yahwa Gibang — a face blending cool aristocratic mystery with gentle warmth. Refined elegant features: long vertical face, smooth narrow jawline, small V-chin, a calm forehead of normal height (not tall or overly broad), low subtle cheekbones. FACIAL PROPORTION: the eyes sit HIGH on the face, at or just above the vertical midline of the head — do not place the eyes low, do not enlarge the forehead. Narrow long almond eyes, half-lidded and languid, with sleek monolid eyes — the upper eyelids are completely smooth and flat with NO double-eyelid crease and no fold line, the skin running unbroken from the eyelashes up to the brow (Korean single-eyelid / monolid). Sharp clean inner corners with outer corners lifting slightly upward — a subtle cat-eye tilt. SIGNATURE: near-black ink-colored irises, very dark sumi-ink charcoal eyes almost black with only the faintest grey undertone, with small constricted pupils, a distinct sanpaku gaze where the white of the eye shows on three sides (both sides and below the iris), the iris sitting slightly high — giving a cool, intense, slightly unsettling mysterious stare. Soft red-tinged eye makeup — a delicate crimson flush along the outer eye corners and lids, sensual and striking against the near-black eyes. Dark brows with a soft semi-arched shape, the brow tails lifting slightly upward. Long slim nose with a small neat tip. A medium-wide mouth, the lips wide horizontally with a thin M-curved upper lip and slightly fuller lower lip. Grey-black hair color. LIVING WARM SKIN (critical): fair skin with peach undertones, rendered in the warm amber light of the candles — the lit planes read as warm honey-amber, the shadows as deep warm reddish-brown, NEVER grey and NEVER ashen. Blood shows beneath it: a soft rose flush on the cheeks, the rims of the ears, the tip of the nose and the inner eye corners; the lips keep their warm colour. The skin is dark and low-key but ALIVE and saturated with warmth — he must never look pale, drained, ashen or corpse-like.`},
-  "설온 (雪溫)":{memo:"서늘하고 우아한 미남(남성적) / 백매화 미인 / 은발·백발 긴 생머리 / 아주 밝은 그레이 눈 + 눈가 붉은 메이크업 / 잘 붉어짐 / 절대 여성적이지 않게", face:
-`A strikingly handsome young Joseon man in his early twenties — a cool "winter plum-blossom" beauty, elegant and refined but clearly MASCULINE, a beautiful young MAN, never feminine, never girlish, never androgynous-pretty. Handsome, not cute; a man, not a boy. FACE: a long, elegant, tapering face with a SHARP, clean-cut V-line MASCULINE jawline and a defined, slightly pointed chin — lean but with real, clearly visible bone structure, not soft or delicate; a broad calm forehead, and subtly high, faintly prominent cheekbones that add to his cool, striking look. EYES: long, narrow almond eyes with gently downturned outer corners, softly half-lidded — a calm, cool, slightly reserved gaze with a quiet gentleness underneath, but a clear masculine set to the eyes, not doe-eyed or girlish. IRISES: VERY PALE BRIGHT GREY — luminous light silver-grey with a faint icy-blue undertone, soft and almost translucent like a pale winter sky, striking and cool. EYE MAKEUP: a soft but distinct crimson-red flush along the outer corners and upper lids of the eyes — a clearly drawn red eyeliner/shadow accent, separate from his natural blush, striking against the pale cool irises and giving a sensual, eye-catching contrast. Dark, defined but neatly groomed eyebrows — a soft, elegant arch that lifts slightly toward the outer end, masculine and sitting close to the eyes (not thin or faded). Dark lashes. A straight, refined masculine nose with a medium-high bridge and a neat, slim tip. A well-defined mouth with a slightly fuller lower lip — calm and composed, resting naturally closed most of the time, but capable of a lazy, faintly smug half-smile with one corner of the mouth lifting. His overall impression is a cool, elegant, quietly warm young man — the kind whose composure cracks into a vivid blush; refined and handsome, with a masculine jaw and frame, not a pretty girl. SKIN: snow-white, COOL-TONED porcelain skin (a cool ivory base, not warm) — extremely smooth and almost translucent, pale but never grey, ashen or corpse-like, with soft living color showing faintly beneath it. A faint natural rosy flush sits under the eyes, at the tip of the nose and across the upper cheeks even at rest — and his defining trait: when flustered his ears, neck and under-eyes flush vividly red. Even under warm candlelight this cool pale tone should hold (unlike other characters, his skin does NOT shift into a warm honey-amber) — pale and cool, but alive, never grey or pale-dead.`},
+  "설온 (雪溫)":{memo:"서늘하고 우아한 미남(남성적) / 백매화 미인 / 흑발 긴 생머리 / 아주 밝은 그레이 눈 / 잘 붉어짐 / 절대 여성적이지 않게", face:
+`A strikingly handsome young Joseon man in his early twenties — a cool "winter plum-blossom" beauty, elegant and refined but clearly MASCULINE, a beautiful young MAN, never feminine, never girlish, never androgynous-pretty. Handsome, not cute; a man, not a boy. FACE: a long, elegant face with a clean defined MASCULINE jawline and a firm chin — refined but with real bone structure, not soft or delicate; a broad calm forehead, low subtle cheekbones. EYES: long, narrow almond eyes with gently downturned outer corners, softly half-lidded — a calm, cool, slightly reserved gaze with a quiet gentleness underneath, but a clear masculine set to the eyes, not doe-eyed or girlish. IRISES: VERY PALE BRIGHT GREY — luminous light silver-grey with a faint icy-blue undertone, soft and almost translucent like a pale winter sky, striking and cool. Dark, defined eyebrows — straight and clean, masculine, sitting close to the eyes (not thin or faded). Dark lashes. A straight, refined masculine nose with a medium-high bridge and a neat tip. A well-defined mouth, lips neither too full nor too thin, calm and composed, resting naturally closed. His overall impression is a cool, elegant, quietly warm young man — the kind whose composure cracks into a vivid blush; refined and handsome, with a masculine jaw and frame, not a pretty girl. SKIN: fair porcelain skin with warm ivory base and peach undertones, very smooth, with a soft natural reddish tint under the eyes (a faint rosy flush along the lower lash line and upper cheeks) even at rest — and his defining trait: when flustered his ears, neck and under-eyes flush vividly red. Rendered in warm candlelight, warm and alive, never grey or pale-dead.`},
   "만석 (일꾼)":{memo:"성실하고 착한 일꾼 / 떡대+소년미 대비 / 짧은 크롭+흰 이마띠 / 가슴근육·팔뚝 포인트 / 순한 눈 / 절대 아저씨 금지",face:
 `A rugged, masculine young Joseon laborer, the loyal hardworking hand of Yahwa Gibang, unmistakably 28-29 years old — youthful and healthy but NOT pretty, NOT delicate, NOT a polished flower-boy idol face. This is a raw, rough-edged handsome man, not a beautiful one. YOUTH (still important): smooth taut healthy skin with no forehead lines, no laugh-line creases, no eye bags, no craggy aging — young but hard and masculine, not soft or cute. FACE SHAPE: a long, angular, distinctly MASCULINE face — a hard, sharp, well-cut jawline with a firm squared-off chin, flat lean cheeks with visible planes, a strong bone structure. Handsome in a rough, chiseled, slightly severe way, never rounded, never soft, never pretty-boy. EYES (key): long, narrow, HOODED half-lidded eyes with a low crease and slightly downturned outer corners, set in a flat, unbothered, slightly aloof expression — a lazy, cool, indifferent gaze. VERY DARK eyes — near-black, deep charcoal-brown irises so dark they read almost black, with TINY constricted pupils and a subtle sanpaku feel (a sliver of white under the iris), giving a sharp, detached, masculine stare. The eyes are dark and flat, NOT bright, NOT light brown, NOT sparkling — small dark pupils, heavy hooded lids, cool and deadpan, but not unkind. BROWS: thick, straight, dark, low-set eyebrows close to the eyes. NOSE: a long, straight, defined masculine nose with a high straight bridge and a slightly wide, solid tip with real nostrils — strong and a little rough, not a dainty small nose. MOUTH: a WIDE mouth with lips that are broad and horizontally wide but fairly THIN and flat, a straight relaxed set — not full pouty lips, not a small cupid mouth; a wide masculine mouth that only just curves for a faint closed-lip smile. His build is huge and imposing, but the FACE must stay strong and detailed enough to hold its own — a rough, cool, masculine handsomeness with a sincere good-natured man underneath the aloof surface. SKIN: healthy sun-kissed skin with warm golden-beige undertones, smooth but weathered-just-slightly by outdoor work, a faint flush across the cheekbones and nose from exertion, often lightly sweat-sheened. Clean of beard and stubble, no wrinkles, no scars.`},
 };
@@ -624,6 +696,7 @@ function init(){
     document.getElementById('koBar').style.display=on?'':'none';
     document.getElementById('koNote').style.display=on?'':'none';
   });
+  initVid();
   window.__order='style';
   document.getElementById('ord-style').classList.add('on');
   build();
@@ -657,7 +730,7 @@ function renderStyleLog(){
 // 캐릭터별 권장 헤어·체형 (전환 시 자동 적용)
 const CHAR_DEFAULTS = {
   "하진 (명리)":{hair:"반묶음 장발 ★기본", body:"넓은 직각어깨·슬림근육 ★기본"},
-  "설온 (雪溫)":{hair:"은발 긴 생머리 (설온)", body:"연약하지만 건강한 (설온)"},
+  "설온 (雪溫)":{hair:"흑발 긴 생머리 (설온)", body:"연약하지만 건강한 (설온)"},
   "만석 (일꾼)":{hair:"짧은 크롭+이마띠 (만석)", body:"강인한 일꾼 떡대 (만석)"}
 };
 function applyCharDefaults(k){
@@ -739,7 +812,7 @@ function buildChips(containerId,data,targetId,preselect,nameLabelId){
         const parts=[...cont.querySelectorAll('.chip.on')].map(x=>data[x.textContent]);
         document.getElementById(targetId).value=parts.join(', ');
       }
-      build();
+      (containerId.startsWith('vid')?buildVid:build)();
     };
     if(preselect&&k===preselect){c.classList.add('on'); document.getElementById(targetId).value=data[k];}
     cont.appendChild(c);
@@ -881,6 +954,159 @@ function fallbackCopy(text,btn){
   }catch(e){ flash(btn,'복사 실패'); }
 }
 function flash(btn,txt){if(!btn)return; const t=btn.textContent; btn.textContent=txt; const dur=txt.length>8?2600:1200; setTimeout(()=>btn.textContent=t,dur);}
+// ===================== 🎬 영상(모션) 모드 =====================
+// 새로 생성이 아니라 "완성 이미지에 모션만" — 일관성 유지가 최우선
+const VID_RULE_DEFAULT =
+`Animate the provided image. This is an IMAGE-TO-VIDEO motion pass, NOT a regeneration — do not redraw, restyle or reinterpret anything.
+PRESERVE EXACTLY (critical): keep the original artwork 100% identical in art style, linework, flat cel shading, color palette, lighting and shadow shapes, character face and features, hairstyle, costume, accessories, background and composition. Every frame must look like the same illustration, only moving. No style drift, no re-rendering, no change in brightness, contrast or color grade across the clip.
+CAMERA: completely LOCKED and STATIC. No pan, no tilt, no zoom, no dolly, no push-in, no orbit, no parallax, no handheld shake. The frame never moves; only elements inside the image move.
+MOTION QUALITY: extremely slow, subtle and continuous — gentle micro-movement rather than action. Everything eases smoothly, no sudden or jerky movement, no fast gestures. The figure stays in the same pose and the same position in frame throughout; motion is a small variation around that pose, never a new pose.`;
+
+const VID_SUBJECT = {
+  "호흡 (기본)":"the chest and shoulders rise and fall with slow, shallow breathing",
+  "눈 깜빡임":"slow, occasional natural blinks, eyelids easing shut and open",
+  "시선 이동":"the eyes shift very slightly, a slow glance drifting a few degrees and settling back",
+  "머리카락 흔들림":"a few loose strands of hair sway gently, as if stirred by a faint draught",
+  "옷자락 흔들림":"the fabric of the robe and sleeves drifts and settles softly, folds shifting a little",
+  "고개 미세 기울임":"the head tilts a few degrees very slowly and eases back",
+  "입가 미소 번짐":"the corners of the closed lips curve up a little, a slow smile forming (lips stay closed, no teeth)",
+  "손가락 움직임":"the fingers shift and settle almost imperceptibly",
+  "술 따르기":"the hand tilts the pot slowly, a thin stream of liquid pouring continuously into the cup",
+  "부채 살랑":"the folding fan moves slowly back and forth in a small arc"
+};
+
+const VID_AMBIENT = {
+  "촛불 흔들림":"the candle flames flicker and waver softly, their warm light breathing slightly",
+  "향 연기":"thin incense smoke curls and rises slowly, drifting upward",
+  "먼지 입자":"fine dust motes float slowly through the air",
+  "꽃잎 날림":"a few plum blossom petals drift down slowly across the frame",
+  "커튼·베일 흔들림":"the sheer curtains and hanging fabric sway gently",
+  "등불 명멸":"the lanterns glow and dim very slightly, a slow warm pulse",
+  "달빛 변화":"the moonlight shifts almost imperceptibly across the surfaces"
+};
+
+const VID_SPEED = {
+  "아주 느리게 ★기본":"overall motion speed: extremely slow, roughly half normal speed, dreamlike and unhurried",
+  "느리게":"overall motion speed: slow and calm, gentle and continuous",
+  "숨결만":"overall motion speed: almost still — only the faintest micro-movement, nearly a living photograph"
+};
+
+const VID_LOOP = {
+  "매끄러운 루프 ★기본":"seamless loop: the last frame matches the first frame so the clip loops without a visible cut",
+  "5초 단발":"about 5 seconds, a single continuous take with no cut",
+  "10초 단발":"about 10 seconds, a single continuous take with no cut"
+};
+
+// 한국어 대역
+const VID_KO_RULE =
+`제공된 이미지를 애니메이션화하세요. 이것은 이미지→영상 모션 작업이며 재생성이 아닙니다 — 어떤 것도 다시 그리거나, 화풍을 바꾸거나, 재해석하지 마세요.
+반드시 그대로 유지(핵심): 원본 그림의 화풍, 선화, 플랫 셀 채색, 색 팔레트, 조명과 그림자 형태, 인물의 얼굴과 이목구비, 헤어스타일, 의상, 장신구, 배경과 구도를 100% 동일하게 유지. 모든 프레임이 같은 일러스트로 보여야 하며 오직 움직임만 있어야 함. 화풍 변형 없음, 재렌더링 없음, 클립 전체에서 밝기·대비·색조 변화 없음.
+카메라: 완전히 고정. 팬·틸트·줌·달리·푸시인·궤도·시차·핸드헬드 흔들림 전부 없음. 프레임은 절대 움직이지 않고, 이미지 안의 요소만 움직임.
+모션 품질: 극도로 느리고 미세하며 연속적으로 — 동작이라기보다 미세한 움직임. 모든 것이 부드럽게 감속하며, 갑작스럽거나 끊기는 움직임 없음, 빠른 제스처 없음. 인물은 처음부터 끝까지 같은 포즈와 같은 위치를 유지하며, 모션은 그 포즈 주변의 작은 변화일 뿐 새로운 포즈가 아님.`;
+
+const VID_KO_SUBJ = {
+  "호흡 (기본)":"가슴과 어깨가 느리고 얕은 호흡에 따라 천천히 오르내림",
+  "눈 깜빡임":"느리고 자연스러운 눈 깜빡임이 이따금, 눈꺼풀이 부드럽게 감겼다 열림",
+  "시선 이동":"눈동자가 아주 살짝 움직임 — 느린 시선이 몇 도 흘렀다가 다시 제자리로",
+  "머리카락 흔들림":"풀린 머리 몇 가닥이 희미한 바람에 스치듯 부드럽게 흔들림",
+  "옷자락 흔들림":"로브와 소매의 천이 부드럽게 흔들렸다 가라앉고, 주름이 조금씩 움직임",
+  "고개 미세 기울임":"고개가 아주 천천히 몇 도 기울었다가 다시 돌아옴",
+  "입가 미소 번짐":"다문 입꼬리가 조금씩 올라가며 천천히 미소가 번짐(입술은 다문 채, 이 보이지 않음)",
+  "손가락 움직임":"손가락이 거의 알아채기 어려울 만큼 미세하게 움직였다 멈춤",
+  "술 따르기":"손이 주전자를 천천히 기울여 가는 물줄기가 잔으로 계속 흘러내림",
+  "부채 살랑":"접선이 작은 호를 그리며 천천히 앞뒤로 살랑임"
+};
+
+const VID_KO_AMB = {
+  "촛불 흔들림":"촛불이 부드럽게 흔들리고 일렁이며, 따뜻한 빛이 은은히 숨 쉬듯 변함",
+  "향 연기":"가는 향 연기가 천천히 감아 올라 위로 흩어짐",
+  "먼지 입자":"고운 먼지 입자가 공기 중을 천천히 떠다님",
+  "꽃잎 날림":"매화 꽃잎 몇 장이 화면을 가로질러 천천히 떨어짐",
+  "커튼·베일 흔들림":"얇은 커튼과 늘어진 천이 부드럽게 흔들림",
+  "등불 명멸":"등불이 아주 살짝 밝아졌다 어두워지며 따뜻하게 느린 맥동",
+  "달빛 변화":"달빛이 표면 위로 거의 알아채기 어렵게 미세히 이동"
+};
+
+const VID_KO_SPEED = {
+  "아주 느리게 ★기본":"전체 모션 속도: 극도로 느리게, 보통 속도의 절반 정도, 몽환적이고 서두르지 않게",
+  "느리게":"전체 모션 속도: 느리고 차분하게, 부드럽고 연속적으로",
+  "숨결만":"전체 모션 속도: 거의 정지 — 가장 희미한 미세 움직임만, 살아 있는 사진에 가깝게"
+};
+
+const VID_KO_LOOP = {
+  "매끄러운 루프 ★기본":"매끄러운 루프: 마지막 프레임이 첫 프레임과 일치해 끊김 없이 반복됨",
+  "5초 단발":"약 5초, 컷 없이 하나의 연속 테이크",
+  "10초 단발":"약 10초, 컷 없이 하나의 연속 테이크"
+};
+
+const VID_KO_NEG =
+`금지: 카메라 이동, 팬, 줌, 달리, 트래킹, 시차, 흔들림, 핸드헬드, 화풍 변경, 재렌더링, 다시 그리기, 다른 그림체, 얼굴 변형, 머리 변형, 의상 변형, 모핑, 왜곡, 잘못된 해부학, 팔다리 추가, 깜빡임, 색 변화, 밝기 변화, 빠른 움직임, 갑작스러운 동작, 점프컷, 사물 추가, 인물 추가, 텍스트, 워터마크`;
+
+function setMode(m){
+  const img = m==='image';
+  document.getElementById('imageMode').style.display = img?'':'none';
+  document.getElementById('videoMode').style.display = img?'none':'';
+  document.getElementById('tab-image').classList.toggle('on', img);
+  document.getElementById('tab-video').classList.toggle('on', !img);
+  if(!img) buildVid();
+}
+function resetVidRule(){
+  document.getElementById('vidRuleBox').value=VID_RULE_DEFAULT;
+  buildVid();
+}
+function buildVid(){
+  const g=id=>document.getElementById(id).value.trim();
+  const rule=g('vidRuleBox'), subj=g('vidSubjBox'), amb=g('vidAmbBox'),
+        spd=g('vidSpeedBox'), loop=g('vidLoopBox');
+  const motion=[subj,amb].filter(Boolean).join(' ');
+  const parts=[rule, motion?('MOTION IN THIS SHOT: '+motion):'', spd, loop].filter(Boolean);
+  const merged=parts.join('\n');
+  document.getElementById('vidOutput').textContent=merged;
+  const words=merged.split(/\s+/).filter(Boolean).length;
+  document.getElementById('vidStat').textContent=`${words} words · ${merged.length} chars`;
+  // 한국어
+  const koMotion=[toKoVid(subj,VID_SUBJECT,VID_KO_SUBJ), toKoVid(amb,VID_AMBIENT,VID_KO_AMB)].filter(Boolean).join(' ');
+  const koParts=[VID_KO_RULE,
+    koMotion?('이번 컷의 움직임: '+koMotion):'',
+    toKoVid(spd,VID_SPEED,VID_KO_SPEED), toKoVid(loop,VID_LOOP,VID_KO_LOOP), VID_KO_NEG];
+  let ko=koParts.filter(Boolean).map(t=>t.replace(/\s*\n\s*/g,' ').trim()).join(' ');
+  document.getElementById('vidKoOutput').textContent=ko.replace(/\s{2,}/g,' ').trim();
+}
+function toKoVid(t,enDict,koDict){
+  if(!t) return '';
+  let out=t.trim();
+  for(const k in enDict){
+    const en=(enDict[k]||'').trim();
+    if(en && out.includes(en)) out=out.split(en).join(koDict[k]||en);
+  }
+  return out;
+}
+function copyVid(){ vidCopy('vidOutput','vidCopyBtn'); }
+function copyVidNeg(){ vidCopy('vidNegOutput','vidNegCopyBtn'); }
+function copyVidKo(){ vidCopy('vidKoOutput','vidKoCopyBtn'); }
+function vidCopy(outId,btnId){
+  const text=document.getElementById(outId).textContent;
+  const btn=document.getElementById(btnId);
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>flash(btn,'복사됨 ✓')).catch(()=>fallbackCopy(text,btn));
+  } else fallbackCopy(text,btn);
+}
+function initVid(){
+  document.getElementById('vidRuleBox').value=VID_RULE_DEFAULT;
+  buildChips('vidSubjChips',VID_SUBJECT,'vidSubjBox');
+  buildChips('vidAmbChips',VID_AMBIENT,'vidAmbBox');
+  buildChips('vidSpeedChips',VID_SPEED,'vidSpeedBox',"아주 느리게 ★기본",'__vspd');
+  buildChips('vidLoopChips',VID_LOOP,'vidLoopBox',"매끄러운 루프 ★기본",'__vloop');
+  ['vidRuleBox','vidSubjBox','vidAmbBox','vidSpeedBox','vidLoopBox'].forEach(id=>
+    document.getElementById(id).addEventListener('input',buildVid));
+  document.getElementById('vidKoView').addEventListener('change',e=>{
+    const on=e.target.checked;
+    document.getElementById('vidKoOutput').style.display=on?'':'none';
+    document.getElementById('vidKoBar').style.display=on?'':'none';
+  });
+  buildVid();
+}
+
 init();
 </script>
 </body>
