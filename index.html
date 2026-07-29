@@ -322,7 +322,7 @@ const BGS = {
 
   // ---- 밤 · MOON HARMONY (신비 · 관능 · 몽환) ----
   "밤 · 달빛 창가":"NIGHT, Moon Harmony concept — a dim room under a crescent moon seen through the lattice window, cool moonlight spilling in, moon-navy and deep-plum shadows with moon-gold highlights, gauzy veils drifting, mysterious and dreamlike",
-  "밤 · 촛불 사랑방":"NIGHT, Moon Harmony concept — a dim gibang room lit only by guttering candles, thin incense smoke curling upward, golden dust motes suspended in the dark air, deep moon-navy and plum shadows, brass and jade objects catching faint gold light, sensual and hushed",
+  "밤 · 촛불 사랑방":"NIGHT, Moon Harmony concept — a dreamy moonlit East-Asian interior, serene and romantic. A full moon hangs in the night sky beyond a wide traditional lattice window; pink cherry-blossom branches outside catch the moonlight and frame the view, with distant East-Asian pavilion rooftops and dark mountain ridges faintly visible. Sheer pink silk curtains drape long and drift as if stirred by a breeze; cherry petals scatter across the floor and around the furniture. A low wooden table at the center holds a teacup and an incense burner, calm and lived-in. Scattered candles and traditional lanterns add warm orange light that contrasts against the cool blue of the moonlight. Deep moon-navy and plum shadows, soft and lyrical",
   "밤 · 홍등 복도":"NIGHT, Moon Harmony concept — a dark corridor of the gibang hung with red lanterns glowing softly in the distance, deep navy and plum darkness, warm lantern light pooling on the wooden floor, alluring and secretive",
   "밤 · 창호 그림자":"NIGHT, Moon Harmony concept — the shadow of a lattice window (changho) cast in sharp geometric patterns across the darkened room and over the figure, faint candlelight behind, moon-navy and smoke-grey tones, atmospheric and cinematic",
   "밤 · 향 연기와 향로":"NIGHT, Moon Harmony concept — a brass incense burner in the foreground, thick incense smoke coiling upward and veiling the air, deep plum and navy darkness, faint gold and jade glints, mystical and trance-like",
@@ -342,7 +342,9 @@ const COMPS = {
   "3/4 측면":"(three-quarter view:1.2), upper body, face turned slightly, elegant angle",
   "옆모습":"(profile side view:1.2), upper body, graceful profile",
   "클로즈업·정면":"(front view:1.3), face close-up, intimate framing",
-  "가로 와이드":"wide horizontal landscape composition, (front view:1.2), upper body with negative space around the figure for a background scene, cinematic banner framing"
+  "가로 와이드":"wide horizontal landscape composition, (front view:1.2), upper body with negative space around the figure for a background scene, cinematic banner framing",
+  "위에서 아래·밀착":"close-up upper-body shot, centered face composition, slight high-angle perspective, character leaning forward toward the viewer, viewer positioned slightly below, head tilted gently downward, direct eye contact, intimate framing",
+  "아래에서 위로·로우앵글":"a close-up to mid-shot composition framed from the upper chest to the head, the body slightly turned while the face tilts gently to one side and angles downward toward the viewer. The camera sits a little below eye level, a subtle LOW-ANGLE perspective looking up that emphasizes the neck and jawline. The face is centered, the mood intimate, poised and quietly dominant"
 };
 
 // ===== 이미지 비율 (SDXL 권장 해상도 포함) =====
@@ -376,15 +378,18 @@ const KO_CHARS = {
 const KO_EXPR = {
   "차분한 자신감 ★기본":"차분하고 조용히 자신감 있는 표정. 서늘한 거리감과 옅은 온기를 함께 지님. 입술은 편안히 다물려 있음",
   "은은한 미소":"희미하고 은은한 입 다문 미소 — 입술은 다문 채 입꼬리만 아주 살짝 올라가고 이는 보이지 않음, 눈이 따뜻하게 부드러워짐. 절제된 표정 사이로 조용한 다정함이 비침",
-  "나른한 웃음":"나른하고 느긋한 입 다문 미소 — 무겁게 반쯤 감긴 눈, 다문 입꼬리가 천천히 의미심장하게 휘어지고 이는 보이지 않음. 서두르지 않고 관능적, 혼자만 아는 무언가에 재밌어하는 듯",
-  "나른하게 입 벌린":"나른하고 졸린 표정에 입술이 아주 살짝만 벌어짐 — 입술 사이로 아주 작은 틈, 편안하고 관능적이며 막 숨을 쉬거나 말하려는 듯. 눈은 무겁게 반쯤 감겼지만 어두운 눈동자가 정면으로 보는 사람을 응시함(졸린 듯한 직시). 중요: 입술은 아주 조금만 벌어지고 — 앞니가 보이지 않음, 이가 전혀 보이지 않음, 입을 크게 벌리지 않음, 활짝 웃지 않음, 헐떡이지 않음. 그저 가장 얇은 틈만. 무방비하고 졸리고 조용히 관능적",
+  "나른한 웃음":"나른하고 편안한 반쪽 미소, 부드럽게 내리깐 눈에 은은하게 유혹적인 온기, 살짝 올라간 입꼬리가 장난기와 조용한 자신감을 내비침. 전체적으로 차분하고 무심한 듯하면서도 다정한 표정, 희미하게 짓궂고 자연스럽게 매력적인 무드. 시선은 침착하고 흔들림 없이, 보는 사람을 차분히 꿰뚫어보는 듯. 볼에 옅은 홍조와 자연스럽고 부드러운 장밋빛이 얼굴에 섬세하게 번짐.",
+  "나른하게 입 벌린":"반쯤 감긴 눈, 부드럽고 나른한 시선, 살짝 벌어진 입술의 짓궂은 미소, 옅게 상기된 볼, 은은한 장밋빛 홍조, 편안하고 조용히 유혹적인 표정, 장난스러운 자신감, 자연스러운 온기",
   "싱긋 웃음":"가볍고 장난스러운 입 다문 미소 — 입술은 다문 채 이는 보이지 않고, 한쪽 입꼬리만 살짝 더 올라가 짓궂게 휘어짐. 눈이 따뜻하고 장난스럽게 접힘",
-  "부끄러움 (볼 빨개짐)":"당황하고 수줍어하는 표정 — 볼·귀·눈 밑까지 새빨갛게 물들고, 시선을 피하며, 입술을 꾹 다묾. 서늘한 여유가 무너져 부끄러움이 드러남",
+  "부끄러움 (볼 빨개짐)":"당황한 표정, 옅게 상기된 볼에 은은하고 절제된 홍조(부드럽고 은은하게, 새빨갛거나 진한 다홍이 아님), 반쯤 감긴 멍한 눈, 부끄러워 억누르는 표정, 손을 깨묾, 감정을 참으려 애씀, 흔들리는 시선, 부드럽고 유혹적인 긴장감, 수줍지만 압도된 무드",
   "당황 (땀)":"허를 찔린 듯 당황한 표정 — 눈이 살짝 커지고 눈썹이 올라감. 관자놀이로 땀 한 방울이 흐르고, 입이 어색하게 벌어짐. 평소의 여유가 완전히 무너짐",
   "경청하는 표정":"귀 기울여 듣는 표정 — 고개를 살짝 기울이고, 부드럽고 흔들림 없는 시선을 상대에게 고정. 눈썹은 편안하고 입술은 다물려 있음. 조용히 온전한 집중을 줌",
   "밝게 웃음":"환하고 행복한 미소 — 얼굴 전체가 따뜻하고 밝게 환해지고, 눈이 부드러운 초승달 모양으로 휘며, 볼이 올라가 진심 어린 기쁨과 다정함이 뿜어져 나옴(입술이 살짝 벌어져도 부드럽게, 이를 앙다물지 않음)",
   "옅은 미소":"아주 옅고 절제된 미소 — 다문 입술 끝이 아주 희미하게 올라갈 뿐, 차분하고 은은하며, 절제된 얼굴에 온기의 흔적만 살짝 배어나옴",
   "윙크":"장난스럽고 요염한 윙크 — 한쪽 눈을 편안하게 감아 윙크하고 다른 눈은 보는 사람을 응시, 다문 입술 한쪽 끝이 올라가며, 매력적이고 짓궂은 반짝임, 가볍고 자신감 있게",
+  "거친 호흡":"멍하고 압도된 표정의 성인 남성, 반쯤 감긴 촉촉한 눈, 짙게 상기된 볼과 코, 얼굴에 번지는 진한 핑크빛 홍조, 살짝 찌푸린 눈썹, 벌어진 입술 사이로 이가 보임, 눈에 띄게 거칠고 불안정한 호흡. 숨을 쉴 때마다 가슴과 목이 긴장되고, 입술이 희미하게 떨리며 볼과 목에 땀방울이 맺힘. 부끄럽고 숨 가쁘며 감정이 벅차오른 표정, 부드럽고 연약한 긴장감과 희미하게 괴로우면서도 도취된 듯한 인상.",
+  "쑥스러움":"수줍고 조용히 당황한 표정, 부드럽게 반쯤 감긴 눈, 희미하고 어색한 미소, 옅게 상기된 볼. 시선이 살짝 옆으로 흘러 눈을 똑바로 마주치길 피하는 듯하고, 입꼬리가 절제된 수줍음으로 아주 조금만 올라감. 전체적으로 부드럽고 조심스러우며 은은하게 따뜻한 무드, 차분한 얼굴 뒤에 옅은 부끄러움을 숨긴 인상.",
+  "쑥스러운 미소":"수줍으면서 살짝 짓궂은 표정, 반쯤 감긴 눈, 작고 장난스러운 미소, 짙게 상기된 볼. 부드럽고 수줍은 온기를 띠고 아래를 내려다보며, 차분하고 즐거운 표정 뒤로 부끄러움을 숨기려는 듯. 고개를 살짝 숙이고 한쪽으로 기울여 밀착되고 조용히 다정한 무드.",
   "유혹하는 눈빛":"유혹하듯 짓궂은 시선 — 턱을 살짝 내리고 속눈썹 사이로 올려다봄. 느리고 의미심장한 반쪽 미소, 시선을 상대에게 고정, 의도적으로 초대하는 듯",
   "서늘한 무표정":"서늘한 무표정 — 미소 없음, 읽을 수 없는 평평한 눈, 초연하고 먼 정적",
   "다정한 눈맞춤":"다정하고 애정 어린 시선을 똑바로 마주함. 경계 없이 따뜻한 눈, 작고 부드러운 입 다문 미소(이 보이지 않음), 서늘함이 모두 녹아 있음"
@@ -450,7 +455,9 @@ const KO_COMPS = {
   "3/4 측면":"3/4 측면, 상반신, 얼굴을 살짝 돌린 우아한 각도",
   "옆모습":"옆모습, 상반신, 우아한 프로필",
   "클로즈업·정면":"정면, 얼굴 클로즈업, 밀착된 프레이밍",
-  "가로 와이드":"가로로 넓은 와이드 구도, 정면, 인물 주변에 여백을 두어 배경 장면을 담음, 시네마틱 배너 프레이밍"
+  "가로 와이드":"가로로 넓은 와이드 구도, 정면, 인물 주변에 여백을 두어 배경 장면을 담음, 시네마틱 배너 프레이밍",
+  "위에서 아래·밀착":"클로즈업 상반신 샷, 얼굴 중앙 배치, 살짝 하이앵글, 인물이 보는 사람 쪽으로 몸을 기울임, 보는 사람은 살짝 아래에 위치, 고개를 부드럽게 아래로 숙임, 눈을 마주침, 밀착된 프레이밍",
+  "아래에서 위로·로우앵글":"클로즈업~미디엄 샷, 가슴 위부터 머리까지 프레이밍, 몸은 살짝 틀고 얼굴은 한쪽으로 부드럽게 기울여 보는 사람 쪽으로 살짝 숙임. 카메라는 눈높이보다 약간 아래에 위치, 은은한 로우앵글로 올려다보며 목선과 턱선을 강조. 얼굴은 중앙 배치, 밀착되고 우아하며 조용히 압도하는 무드"
 };
 
 const KO_RATIOS = {
@@ -481,7 +488,7 @@ const KO_BGS = {
   "낮 · 다과상":"낮 · 핑크 베일 — 청자 찻잔과 작은 황동 향로가 놓인 낮은 다과상. 향 연기가 가늘게 오르고, 한지 창으로 따뜻한 오후 빛이 듦. 분홍 실크 천과 샴페인 베이지 톤. 은밀하고 차분함",
   "낮 · 기방 앞마당":"낮 · 핑크 베일 — 햇살이 든 기방 앞마당. 기와지붕 한옥 별채와 나무 창살문, 낮은 돌담, 꽃이 핀 늙은 매화나무가 둘러싼 넓은 흙마당. 마당을 가로질러 꽃잎이 흩날리고, 부드럽고 따뜻한 낮 빛에 길고 온화한 그림자. 미스트 핑크·샴페인 베이지·월넛 브라운 톤에 앤티크 골드 포인트. 고요하고 반겨주는 듯함",
   "밤 · 달빛 창가":"밤 · 문 하모니 — 창살 너머 초승달이 보이는 어두운 방. 차가운 달빛이 스며들고, 문 네이비와 딥 플럼 그림자에 문 골드 하이라이트. 얇은 베일이 흩날림. 신비롭고 몽환적",
-  "밤 · 촛불 사랑방":"밤 · 문 하모니 — 흔들리는 촛불만이 밝히는 어두운 기방 사랑방. 향 연기가 가늘게 감아 오르고, 어두운 공기 중에 금빛 먼지가 떠 있음. 깊은 문 네이비와 플럼 그림자, 황동과 옥 오브제가 희미한 금빛을 받음. 관능적이고 숨죽인",
+  "밤 · 촛불 사랑방":"밤 · 문 하모니 — 달빛이 스며드는 동양풍 야간 실내, 고요하고 몽환적이며 은은하게 로맨틱. 넓은 전통 창문 너머로 보름달이 뜬 밤하늘이 보이고, 창밖 분홍빛 벚꽃 가지가 달빛을 받으며 프레임처럼 둘러쌈. 멀리 동양풍 누각 지붕 실루엣과 어두운 산 능선이 희미하게 보임. 반투명한 분홍빛 비단 커튼이 길게 늘어져 바람에 흩날리듯 드리워지고, 바닥과 가구 주변에 벚꽃잎이 흩어짐. 중앙의 낮은 목재 탁자에 찻잔과 향로가 놓여 차분한 정적과 생활감. 곳곳의 촛불과 전통 등불이 따뜻한 주황빛을 더해 달빛의 푸른 색감과 대비. 깊은 문 네이비와 플럼 그림자, 부드럽고 서정적",
   "밤 · 홍등 복도":"밤 · 문 하모니 — 홍등이 걸린 기방의 어두운 복도, 멀리서 은은히 빛남. 깊은 네이비와 플럼의 어둠, 따뜻한 등불빛이 나무 바닥에 고임. 매혹적이고 은밀함",
   "밤 · 창호 그림자":"밤 · 문 하모니 — 창살(창호) 그림자가 어두운 방과 인물 위로 날카로운 기하 패턴을 드리움. 뒤로 희미한 촛불빛, 문 네이비와 스모크 그레이 톤. 분위기 있고 시네마틱",
   "밤 · 향 연기와 향로":"밤 · 문 하모니 — 앞쪽에 황동 향로, 짙은 향 연기가 감아 올라 공기를 가림. 깊은 플럼과 네이비의 어둠, 희미한 금빛과 옥빛 반짝임. 신비롭고 몽환적",
@@ -589,15 +596,18 @@ const BODYTYPES = {
 const EXPRESSIONS = {
   "차분한 자신감 ★기본":"a composed, quietly confident expression carrying both cool distance and a trace of gentle warmth, lips relaxed and closed",
   "은은한 미소":"a faint, subtle CLOSED-LIP smile — the corners of the mouth barely lifted with the lips staying gently closed and NO teeth showing, the eyes softening warmly, a quiet gentle affection showing through the composure",
-  "나른한 웃음":"a languid, lazy CLOSED-LIP smile — heavy half-lidded eyes, the closed mouth curving slowly and knowingly with NO teeth showing, unhurried and sensual, as if amused by something private",
-  "나른하게 입 벌린":"a languid, drowsy expression with the lips only JUST BARELY parted — a small soft gap between the lips, relaxed and sensual, as if about to breathe or speak. The eyes are heavy-lidded and half-closed but the DARK IRISES look STRAIGHT AT THE VIEWER, a direct sleepy gaze meeting the camera. CRITICAL: the lips part only a tiny amount — NO front teeth showing, NO teeth visible at all, NO wide open mouth, NO grin, NO gasp; just the softest sliver of an opening. Unguarded, drowsy, quietly sensual",
+  "나른한 웃음":"A languid, relaxed half-smile, soft lowered eyes with a subtle seductive warmth, slightly upturned lips suggesting playfulness and quiet confidence, an overall calm and nonchalant yet gentle expression, with a faintly teasing and effortlessly charming mood. The gaze feels composed and steady, as if calmly seeing right through the viewer. Lightly flushed cheeks and a natural soft rosy blush spread delicately across the face.",
+  "나른하게 입 벌린":"half-lidded eyes, soft and lazy gaze, slightly parted lips in a teasing smile, faint flushed cheeks, subtle rosy blush, relaxed and quietly seductive expression, playful confidence, effortless warmth",
   "싱긋 웃음":"a light playful CLOSED-LIP smile — the lips stay closed with NO teeth showing, one corner of the mouth pulling up a little higher than the other in a small mischievous curve, the eyes crinkling warmly with playful teasing",
-  "부끄러움 (볼 빨개짐)":"a flustered, bashful expression — the cheeks, ears and the skin under the eyes flushing vividly red, eyes darting away from the viewer, lips pressed together, the cool composure cracking into shy embarrassment",
+  "부끄러움 (볼 빨개짐)":"flustered expression, lightly flushed cheeks with a soft subtle blush (gentle and restrained, NOT bright red, NOT deep crimson), half-lidded dazed eyes, embarrassed and restrained expression, biting hand, trying to suppress emotion, trembling gaze, soft seductive tension, shy but overwhelmed mood",
   "당황 (땀)":"a flustered, caught-off-guard expression — eyes slightly widened, brows drawn up, a single bead of sweat sliding down the temple, the mouth parted awkwardly, the usual composure completely undone",
   "경청하는 표정":"an attentive listening expression — the head tilted slightly, eyes fixed softly and steadily on the viewer, brows relaxed, lips gently closed, giving quiet undivided attention",
   "밝게 웃음":"a bright, happy open smile — the whole face lit up warm and cheerful, eyes curving into soft crescents, cheeks lifted, radiating genuine delight and friendliness (lips may part slightly but keep it soft, no clenched teeth)",
   "옅은 미소":"a very slight, understated smile — just the faintest upward tug at the corners of the closed lips, calm and subtle, a quiet trace of warmth barely surfacing on an otherwise composed face",
   "윙크":"a playful flirtatious wink — one eye closed in a relaxed wink while the other holds the viewer's gaze, one corner of the closed lips curving up, a charming teasing spark, light and confident",
+  "거친 호흡":"An adult male with a dazed, overwhelmed expression, half-lidded glossy eyes, heavily flushed cheeks and nose, a deep pink blush spreading across the face, slightly furrowed brows, parted lips showing teeth, and visibly rough, unsteady breathing. His chest and throat feel tense with each breath, with a faint tremble in his lips and beads of sweat on the cheek and neck. The expression feels embarrassed, breathless, and emotionally overloaded, with a soft vulnerable tension and a faintly pained yet intoxicating look.",
+  "쑥스러움":"A shy, quietly flustered expression with soft half-lidded eyes, a faint awkward smile, and lightly flushed cheeks. His gaze drifts slightly to the side as if avoiding direct eye contact, while the corners of his lips lift just a little in a restrained, bashful way. The overall mood feels gentle, reserved, and subtly warm, with a calm face hiding a touch of embarrassment.",
+  "쑥스러운 미소":"A shy, softly teasing expression with half-lidded eyes, a small playful smile, and deeply flushed cheeks. He looks downward with a gentle, bashful warmth, as if trying to hide his embarrassment behind a calm, amused expression. His head is slightly lowered and tilted to one side, creating an intimate and quietly affectionate mood.",
   "유혹하는 눈빛":"a seductive, teasing look — chin dipped low while the eyes look up through the lashes, a slow knowing half-smile, gaze locked on the viewer, deliberately inviting",
   "서늘한 무표정":"a cool blank expression — no smile, eyes flat and unreadable, an aloof, distant stillness",
   "다정한 눈맞춤":"a tender, affectionate gaze held directly on the viewer, eyes warm and unguarded, a small soft CLOSED-LIP smile with no teeth showing, all coolness melted away"
