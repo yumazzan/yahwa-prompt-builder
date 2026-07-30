@@ -227,6 +227,13 @@
     </div>
 
     <div class="card">
+      <h2><span class="badge var">선택</span> ①-2 끝 장면 지정 <span class="hint" style="display:inline">(마지막 프레임을 다른 이미지로 · 끝 이미지 첨부 필요)</span></h2>
+      <p class="hint">시작 이미지에서 <b>끝 이미지</b>로 자연스럽게 전환하는 모션입니다. 두 이미지를 모두 업로드할 수 있는 툴(Kling·Runway의 첫/끝 프레임 등)에서 사용하세요. 안 쓰면 비워두세요.</p>
+      <div class="row" id="vidEndChips"></div>
+      <textarea id="vidEndBox" rows="3" placeholder="끝 장면 전환 방식 선택 또는 직접 작성 (예: 천천히 눈을 감으며 끝 이미지의 표정으로)"></textarea>
+    </div>
+
+    <div class="card">
       <h2><span class="badge var">가변</span> ② 배경·분위기 모션 <span class="hint" style="display:inline">(촛불·연기·꽃잎 등)</span></h2>
       <div class="row" id="vidAmbChips"></div>
       <textarea id="vidAmbBox" rows="3" placeholder="선택하거나 직접 작성"></textarea>
@@ -274,7 +281,7 @@
 <script>
 // ===== 기본 그림체 =====
 const DEFAULT_STYLE =
-`Premium Korean BL editorial manhwa illustration, CLEAN KOREAN WEBTOON STYLE — crisp digital linework, flat color fill, minimal-to-no painterly blending. Not an oil painting, not a watercolor wash, not muddy or smoky rendering. LINE (core): every form defined by a clean, confident ink-brush outline — moderate line-weight variation (not excessive), tapering at line ends. Lines stay crisp and fully visible on top of color at all times. Charcoal-ink black, not pure black — a crisp, FULLY OPAQUE ink outline on every edge, sitting cleanly on top of the flat color with ZERO blending into it. Around the eyes and brows specifically: soft, thin, relaxed linework — no heavy dark strokes that read as a scowl. RENDERING (critical): STRICT flat cel-shading only. Each surface (skin, hair, fabric) uses just 2-3 FLAT color tones — base tone, one shadow tone, one optional deep-shadow tone. Every shadow shape has a CLEAN, HARD, crisp edge — like a vector cutout — never a soft gradient, never a blended/blurred edge, never scattered dappled spots. NO airbrushing, NO soft blending, NO watercolor bleed, NO patchy/blotchy overlaid texture anywhere on the clothing or skin, NO ink-wash atmosphere layered over the image. Background rendered in the same flat cel style as the figure — same clean lines, same flat shadow shapes, no soft painterly background behind a sharp foreground. SUNLIGHT THROUGH TREES (fix): render any plum-tree or window dappled light as a SMALL NUMBER of large, clean-edged flat shadow shapes cast on the ground and robe — NOT dozens of small soft scattered spots. Think 3-5 bold graphic shadow patches with sharp silhouette edges, not a mottled/speckled texture. SKIN: matte, warm honey-amber in light, warm reddish-brown in shadow — flat cel tones, not blended gradients. Even complexion, no default blush. LIGHTING: dim candlelit interior, unified warm dark grade between figure and background, but shadow shapes stay CLEAN AND FLAT, not smoky or diffused. VALUE: the figure must not be brighter or more spotlit than the background — no part of the skin or clothing is pure white or near-white; the brightest values stay warm and mid-toned, with full brightness reserved for the candle flames themselves, so the figure sits into the scene rather than floating in front of it. COLOR: clean flat color fills in a muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige — applied as FLAT FIELDS, not blended or muddied together at the edges. MATERIAL: garment fabric rendered with clear flat-shaded folds — weight and drape readable through clean shadow shapes, not blended sheen; let each outfit read as its own cloth, do not force any one fabric type. TEXTURE (reduce): remove fine film grain and ink-wash atmosphere entirely. Keep the image texture-free and clean — pure flat color + linework only, no grain overlay, no soft haze layered on top of the color, no soft glow. MOOD: quiet luxury, refined, warm, welcoming — not brooding, not menacing. Avoid: glaring eyes, scowling brows, intimidating stare, sharp/intense gaze, watercolor look, oil painting texture, soft airbrushed gradients, blotchy/patchy shading, scattered dappled light spots, film grain, ink wash haze, painterly muddy color mixing, blurred edges, muddy overlapping brushstrokes, smoky diffused rendering, ashen grey skin, the figure spotlit or brighter than the background, rim light/backlight separating subject, flat even lighting, dissolved linework, manga screentones, HDR, neon.`;
+`Premium Korean BL editorial manhwa illustration, CLEAN KOREAN WEBTOON STYLE — crisp digital linework, flat color fill, minimal-to-no painterly blending. Not an oil painting, not a watercolor wash, not muddy or smoky rendering. LINE (core): every form defined by a clean, confident ink-brush outline — moderate line-weight variation (not excessive), tapering at line ends. Lines stay crisp and fully visible on top of color at all times. Charcoal-ink black, not pure black — a crisp, FULLY OPAQUE ink outline on every edge, sitting cleanly on top of the flat color with ZERO blending into it. Around the eyes and brows specifically: soft, thin, relaxed linework — no heavy dark strokes that read as a scowl. RENDERING (critical): STRICT flat cel-shading only. Each surface (skin, hair, fabric) uses just 2-3 FLAT color tones — base tone, one shadow tone, one optional deep-shadow tone. Every shadow shape has a CLEAN, HARD, crisp edge — like a vector cutout — never a soft gradient, never a blended/blurred edge, never scattered dappled spots. NO airbrushing, NO soft blending, NO watercolor bleed, NO patchy/blotchy overlaid texture anywhere on the clothing or skin, NO ink-wash atmosphere layered over the image. Background rendered in the same flat cel style as the figure — same clean lines, same flat shadow shapes, no soft painterly background behind a sharp foreground. SUNLIGHT THROUGH TREES (fix): render any plum-tree or window dappled light as a SMALL NUMBER of large, clean-edged flat shadow shapes cast on the ground and robe — NOT dozens of small soft scattered spots. Think 3-5 bold graphic shadow patches with sharp silhouette edges, not a mottled/speckled texture. FACE SHADING (exception, important for likeness): unlike the strict hard-edge flat-cel rule everywhere else, the FACE gets one extra pass of very soft, subtle contour shading so it never reads as flat or paper-cutout. Add a faint, low-opacity, SOFT-edged (not hard cel-cut) shadow along the sides of the nose/nostril wings, a gentle shadow just beneath the cheekbones, and a soft shadow along the jawline and under the chin where it meets the neck — the same kind of delicate natural face-modeling seen in premium webtoon close-ups. This facial shadow stays barely-there and softly blended at the edges (a gentle gradient is allowed HERE ONLY, nowhere else in the image), never a heavy dark under-eye shadow, never a dark blob on the nose, never a grey/muddy cast on the skin. Hair, clothing, background and the rest of the body still use the strict flat hard-edge cel shading described above — this soft facial contouring is the one deliberate exception, used only to keep the face from looking flat. SKIN: matte, warm honey-amber in light, warm reddish-brown in shadow — flat cel tones, not blended gradients. Even complexion, no default blush. EXCEPTION (character priority): if a specific character's own face description states a different skin tone or undertone (e.g. a cooler, paler, porcelain-white complexion), follow THAT character's own skin description instead — character-specific skin instructions always override this general warm-amber default. LIGHTING: dim candlelit interior, unified warm dark grade between figure and background, but shadow shapes stay CLEAN AND FLAT, not smoky or diffused. VALUE: the figure must not be brighter or more spotlit than the background, and nothing should look flatly overexposed or blown-out — but this is an EXPOSURE rule, not a hue rule. If a character's skin or a costume's fabric is specifically designated ivory, snow-white, pale silver or porcelain, render that surface as its own true pale/light value, simply dimmed and warmed slightly by the ambient candlelight — do NOT default it to navy, charcoal or black just to force a "mid-tone." Reserve only the single most saturated pure-bright highlight for the candle flames themselves; everything else, including pale fabrics and pale skin, should read as a gently dimmed version of its OWN true color, never swapped for a darker substitute color. COLOR: clean flat color fills in a muted low-saturation luxury palette — dusty navy, warm ivory, walnut brown, antique gold, muted rose, deep charcoal, warm beige — applied as FLAT FIELDS, not blended or muddied together at the edges. This palette list is a general TONE guide only, NOT a replacement for any costume's own stated palette — when a costume preset specifies its own colors (e.g. ivory, pale grey-blue, jade, crimson, silver-white), render THAT costume's exact stated palette; never default or shift it toward navy/charcoal/black. MATERIAL: garment fabric rendered with clear flat-shaded folds — weight and drape readable through clean shadow shapes, not blended sheen; let each outfit read as its own cloth, do not force any one fabric type. TEXTURE (reduce): remove fine film grain and ink-wash atmosphere entirely. Keep the image texture-free and clean — pure flat color + linework only, no grain overlay, no soft haze layered on top of the color, no soft glow. MOOD: quiet luxury, refined, warm, welcoming — not brooding, not menacing. Avoid: glaring eyes, scowling brows, intimidating stare, sharp/intense gaze, watercolor look, oil painting texture, soft airbrushed gradients, blotchy/patchy shading, scattered dappled light spots, film grain, ink wash haze, painterly muddy color mixing, blurred edges, muddy overlapping brushstrokes, smoky diffused rendering, ashen grey skin, the figure spotlit or brighter than the background, rim light/backlight separating subject, flat even lighting, dissolved linework, manga screentones, HDR, neon.`;
 
 // ===== 의상 10종 (레퍼런스 기반 질감·실루엣 강화) =====
 const COSTUMES = {
@@ -344,7 +351,7 @@ const COMPS = {
   "클로즈업·정면":"(front view:1.3), face close-up, intimate framing",
   "가로 와이드":"wide horizontal landscape composition, (front view:1.2), upper body with negative space around the figure for a background scene, cinematic banner framing",
   "위에서 아래·밀착":"close-up upper-body shot, centered face composition, slight high-angle perspective, character leaning forward toward the viewer, viewer positioned slightly below, head tilted gently downward, direct eye contact, intimate framing",
-  "아래에서 위로·로우앵글":"a close-up to mid-shot composition framed from the upper chest to the head, the body slightly turned while the face tilts gently to one side and angles downward toward the viewer. The camera sits a little below eye level, a subtle LOW-ANGLE perspective looking up that emphasizes the neck and jawline. The face is centered, the mood intimate, poised and quietly dominant"
+  "아래에서 위로·로우앵글":"a close-up to mid-shot composition framed from the upper chest to the head, the body facing forward. The camera sits a little below eye level, a subtle LOW-ANGLE perspective looking up that emphasizes the neck and jawline. The head is held UPRIGHT and LEVEL, facing straight toward the viewer — NOT tilted to one side, NOT cocked, NOT tilted down; the face stays level and centered. The mood is intimate, poised and quietly dominant"
 };
 
 // ===== 이미지 비율 (SDXL 권장 해상도 포함) =====
@@ -352,11 +359,13 @@ const COMPS = {
 // ===== 한국어 대역 (읽기 전용 · 이미지 툴에는 영문을 넣어야 함) =====
 const KO_STYLE = `프리미엄 한국 BL 에디토리얼 만화 일러스트, 깔끔한 한국 웹툰 화풍 — 선명한 디지털 선화, 플랫 컬러 채움, 페인터리한 블렌딩 최소~없음. 유화 아님, 수채화 워시 아님, 탁하거나 뿌연 렌더링 아님.
 선(핵심): 모든 형태를 깔끔하고 자신감 있는 붓 먹선 외곽선으로 정의 — 적당한 굵기 변화(과하지 않게), 선 끝이 가늘게 빠짐. 선은 늘 색 위에 또렷하게 올라앉아 완전히 보임. 순수 블랙이 아닌 차콜 먹색 — 모든 가장자리에 깔끔하고 완전히 불투명한 먹선이 플랫 컬러 위에 올라앉아 색과 전혀 섞이지 않음. 특히 눈과 눈썹 주변: 부드럽고 얇고 편안한 선 — 인상 쓴 것처럼 보이는 무겁고 짙은 획 금지.
-채색(핵심): 엄격한 플랫 셀 셰이딩만. 각 표면(피부·머리·천)은 2~3개의 플랫 컬러 톤만 사용 — 베이스 톤, 그림자 톤 하나, 선택적으로 짙은 그림자 톤 하나. 모든 그림자 형태는 벡터로 오려낸 듯 깔끔하고 딱 떨어지는 하드엣지 — 부드러운 그라데이션, 뭉개진/흐려진 경계, 흩뿌려진 얼룩덜룩한 반점 절대 없음. 에어브러시 없음, 부드러운 블렌딩 없음, 수채화 번짐 없음, 옷이나 피부 어디에도 얼룩덜룩하게 덧바른 텍스처 없음, 이미지 위에 깔린 먹 워시 없음. 배경도 인물과 같은 플랫 셀 스타일로 — 같은 깔끔한 선, 같은 플랫 그림자 형태. 선명한 전경 뒤에 부드러운 페인터리 배경 금지. 나무 사이 햇빛(수정): 매화나무나 창문으로 든 얼룩진 빛은 바닥과 옷 위에 소수의 크고 경계가 뚜렷한 플랫 그림자 도형으로 표현 — 작고 부드러운 반점 수십 개가 아니라, 실루엣 경계가 날카로운 3~5개의 큼직한 그래픽 그림자 덩어리. 얼룩덜룩한 점묘 텍스처 금지.
-피부: 매트, 빛을 받으면 따뜻한 꿀빛 호박색, 그늘은 따뜻한 적갈색 — 플랫 셀 톤이지 블렌딩된 그라데이션 아님. 고른 안색, 기본 볼 홍조 없음.
+채색(핵심): 엄격한 플랫 셀 셰이딩만. 각 표면(피부·머리·천)은 2~3개의 플랫 컬러 톤만 — 베이스 톤, 그림자 톤 하나, 선택적 짙은 그림자 톤 하나. 모든 그림자 형태는 벡터로 오려낸 듯 깔끔하고 딱 떨어지는 하드엣지 — 부드러운 그라데이션, 뭉개진/흐려진 경계, 흩뿌려진 얼룩덜룩한 반점 없음. 에어브러시 없음, 부드러운 블렌딩 없음, 수채화 번짐 없음, 옷이나 피부에 얼룩덜룩하게 덧바른 텍스처 없음, 이미지 위에 깔린 먹 워시 없음. 배경도 인물과 같은 플랫 셀 스타일로 — 같은 깔끔한 선, 같은 플랫 그림자 형태, 선명한 전경 뒤 부드러운 페인터리 배경 금지.
+나무 사이 햇빛(수정): 매화나무나 창문으로 든 얼룩진 빛은 바닥과 옷 위에 소수의 크고 경계가 뚜렷한 플랫 그림자 도형으로 — 작고 부드러운 반점 수십 개가 아니라, 실루엣 경계가 날카로운 3~5개의 큼직한 그래픽 그림자 덩어리. 점묘 텍스처 금지.
+얼굴 셰이딩(예외, 닮음에 중요): 다른 모든 곳의 엄격한 하드엣지 플랫 셀 규칙과 달리, 얼굴에는 아주 부드럽고 은은한 윤곽 셰이딩을 한 겹 더해 종이 오려낸 듯 납작해 보이지 않게 함. 콧대·콧볼 옆, 광대 바로 아래, 턱선과 목이 만나는 턱 아래에 희미하고 낮은 불투명도의 부드러운(하드 셀컷이 아닌) 그림자를 더함 — 프리미엄 웹툰 클로즈업의 섬세하고 자연스러운 얼굴 모델링처럼. 이 얼굴 그림자는 거의 보이지 않을 만큼 은은하고 가장자리가 부드럽게 블렌딩됨(부드러운 그라데이션은 오직 여기에만 허용, 이미지의 다른 어디에도 안 됨). 진한 눈밑 그림자·코의 어두운 덩어리·피부의 회색빛 탁한 기 절대 금지. 머리·의상·배경·나머지 신체는 위의 엄격한 플랫 하드엣지 셀 셰이딩을 그대로 사용 — 이 부드러운 얼굴 윤곽만 의도된 유일한 예외이며, 오직 얼굴이 납작해 보이지 않게 하려는 용도.
+피부: 매트, 빛을 받으면 따뜻한 꿀빛 호박색, 그늘은 따뜻한 적갈색 — 플랫 셀 톤이지 블렌딩 그라데이션 아님. 고른 안색, 기본 볼 홍조 없음. 예외(캐릭터 우선): 특정 캐릭터의 얼굴 설명에 다른 피부톤·언더톤(예: 더 차갑고 창백한 백자 피부)이 명시돼 있으면 그 캐릭터 고유의 피부 설명을 따를 것 — 캐릭터별 피부 지시가 이 일반 웜 앰버 기본값을 항상 우선함.
 조명: 어두운 촛불 실내, 인물과 배경이 하나의 따뜻하고 어두운 톤으로 통일되되 그림자 형태는 깔끔하고 플랫하게 유지 — 뿌옇거나 흩어지지 않음.
-명도: 인물이 배경보다 밝거나 스포트라이트 받으면 안 됨 — 피부·의상 어디에도 순백색·근백색 없음, 가장 밝은 부분도 따뜻한 중간 명도, 완전한 밝기는 오직 촛불 불꽃에만. 인물이 장면 앞에 떠 있지 않고 장면 안에 앉아 있어야 함.
-색: 뮤트한 저채도 럭셔리 팔레트의 깔끔한 플랫 컬러 채움 — 더스티 네이비, 웜 아이보리, 월넛 브라운, 앤티크 골드, 뮤트 로즈, 딥 차콜, 웜 베이지 — 플랫 필드로 칠하고 가장자리에서 섞이거나 탁해지지 않음.
+명도: 인물이 배경보다 밝거나 스포트라이트 받으면 안 되고, 어떤 것도 밋밋하게 노출과다로 날아가면 안 됨 — 다만 이것은 노출 규칙이지 색조 규칙이 아님. 캐릭터의 피부나 의상 천이 아이보리·설백·연은색·백자로 지정돼 있으면 그 표면을 자기 고유의 창백하고 밝은 명도로 렌더링하되 환경 촛불빛에 살짝 어두워지고 따뜻해진 정도로만 — 억지로 "중간 명도"를 만들려고 네이비·차콜·블랙으로 기본 처리하지 말 것. 가장 채도 높고 순수하게 밝은 하이라이트는 오직 촛불 불꽃에만; 창백한 천과 창백한 피부를 포함한 나머지 전부는 자기 고유색이 은은하게 어두워진 버전으로 읽혀야 하며, 더 어두운 대체색으로 바뀌면 안 됨.
+색: 뮤트한 저채도 럭셔리 팔레트의 깔끔한 플랫 컬러 채움 — 더스티 네이비, 웜 아이보리, 월넛 브라운, 앤티크 골드, 뮤트 로즈, 딥 차콜, 웜 베이지 — 플랫 필드로 칠하고 가장자리에서 섞이거나 탁해지지 않음. 이 팔레트 목록은 일반적인 톤 가이드일 뿐 어떤 의상 고유의 팔레트를 대체하지 않음 — 의상 프리셋이 자기 색(예: 아이보리, 연회청, 옥색, 다홍, 은백)을 명시하면 그 의상의 정확한 팔레트를 렌더링하고, 절대 네이비·차콜·블랙으로 기본 처리하거나 이동시키지 말 것.
 재질: 의상 천은 깔끔한 플랫 셰이딩 주름으로 — 무게와 드레이프가 깔끔한 그림자 형태로 읽힘, 블렌딩된 광택 아님. 각 의상이 자기만의 천으로 읽히게 하고 특정 천을 강요하지 말 것.
 질감(제거): 미세 필름 그레인과 먹 워시 분위기를 완전히 제거. 이미지는 텍스처 없이 깔끔하게 — 순수한 플랫 컬러 + 선화만, 그레인 오버레이 없음, 색 위에 얹힌 부드러운 안개 없음, 부드러운 발광 없음.
 무드: 조용한 럭셔리, 세련됨, 따뜻함, 반겨주는 느낌 — 음침하거나 위협적이지 않음.
@@ -457,7 +466,7 @@ const KO_COMPS = {
   "클로즈업·정면":"정면, 얼굴 클로즈업, 밀착된 프레이밍",
   "가로 와이드":"가로로 넓은 와이드 구도, 정면, 인물 주변에 여백을 두어 배경 장면을 담음, 시네마틱 배너 프레이밍",
   "위에서 아래·밀착":"클로즈업 상반신 샷, 얼굴 중앙 배치, 살짝 하이앵글, 인물이 보는 사람 쪽으로 몸을 기울임, 보는 사람은 살짝 아래에 위치, 고개를 부드럽게 아래로 숙임, 눈을 마주침, 밀착된 프레이밍",
-  "아래에서 위로·로우앵글":"클로즈업~미디엄 샷, 가슴 위부터 머리까지 프레이밍, 몸은 살짝 틀고 얼굴은 한쪽으로 부드럽게 기울여 보는 사람 쪽으로 살짝 숙임. 카메라는 눈높이보다 약간 아래에 위치, 은은한 로우앵글로 올려다보며 목선과 턱선을 강조. 얼굴은 중앙 배치, 밀착되고 우아하며 조용히 압도하는 무드"
+  "아래에서 위로·로우앵글":"클로즈업~미디엄 샷, 가슴 위부터 머리까지 프레이밍, 몸은 정면을 향함. 카메라는 눈높이보다 약간 아래에 위치, 은은한 로우앵글로 올려다보며 목선과 턱선을 강조. 고개는 똑바로 세워 수평을 유지하고 정면으로 보는 사람을 바라봄 — 한쪽으로 기울이거나 갸우뚱하거나 아래로 숙이지 않음, 얼굴은 수평으로 중앙 배치. 밀착되고 우아하며 조용히 압도하는 무드"
 };
 
 const KO_RATIOS = {
@@ -967,10 +976,38 @@ function flash(btn,txt){if(!btn)return; const t=btn.textContent; btn.textContent
 // ===================== 🎬 영상(모션) 모드 =====================
 // 새로 생성이 아니라 "완성 이미지에 모션만" — 일관성 유지가 최우선
 const VID_RULE_DEFAULT =
-`Animate the provided image. This is an IMAGE-TO-VIDEO motion pass, NOT a regeneration — do not redraw, restyle or reinterpret anything.
-PRESERVE EXACTLY (critical): keep the original artwork 100% identical in art style, linework, flat cel shading, color palette, lighting and shadow shapes, character face and features, hairstyle, costume, accessories, background and composition. Every frame must look like the same illustration, only moving. No style drift, no re-rendering, no change in brightness, contrast or color grade across the clip.
+`Animate the provided image. This is an IMAGE-TO-VIDEO motion pass, NOT a regeneration — the uploaded image is the single source of truth and must be treated as fixed, finished artwork. Do not redraw, repaint, restyle, re-illustrate, upscale-restyle or reinterpret anything in it.
+
+PRESERVE THE APPEARANCE EXACTLY (highest priority): the character must remain the SAME PERSON in every single frame. Keep the face 100% identical — the same face shape, jawline, eye shape and eye size, eye color, eyebrows, nose, lips, and facial proportions. Keep the exact same hairstyle, hair length, hair color and parting. Keep the exact same skin tone and complexion. Keep the exact same costume — same design, same colors, same collar/neckline, same patterns, same accessories and jewelry, same neckwear. Do NOT beautify, slim, age, de-age, or "improve" the face; do NOT change the character's identity, do NOT swap in a generic face; do NOT alter body proportions. If any frame starts to drift away from the original face or outfit, snap it back to match the source image.
+
+PRESERVE THE LIGHTING & COLOR EXACTLY (highest priority): keep the original lighting setup, light direction, shadow shapes and overall dark warm candlelit grade unchanged across the whole clip. Do NOT brighten, lighten, re-expose or "fix" the image; do NOT add new light sources, glow, bloom, rim light or lens flare; do NOT raise or shift the brightness, contrast, saturation, white balance or color grade in any frame. The character must stay the same value as in the source — never suddenly brighter, whiter, or more spotlit than the original. Flames and existing highlights keep their original placement.
+
+PRESERVE THE STYLE EXACTLY: keep the same flat cel-shaded Korean webtoon art style, the same crisp ink linework, the same hard-edged flat shadow shapes, the same background and composition. No style drift, no re-rendering into a smoother/glossier/3D/painterly look, no added texture, grain or blur. Every frame must look like the exact same illustration, only gently moving.
+
 CAMERA: completely LOCKED and STATIC. No pan, no tilt, no zoom, no dolly, no push-in, no orbit, no parallax, no handheld shake. The frame never moves; only elements inside the image move.
-MOTION QUALITY: extremely slow, subtle and continuous — gentle micro-movement rather than action. Everything eases smoothly, no sudden or jerky movement, no fast gestures. The figure stays in the same pose and the same position in frame throughout; motion is a small variation around that pose, never a new pose.`;
+
+MOTION QUALITY: extremely slow, subtle and continuous — gentle micro-movement rather than action. Everything eases smoothly, no sudden or jerky movement, no fast gestures. The figure stays in the same pose and the same position in frame throughout; motion is a small variation around that pose, never a new pose. When in doubt, move LESS and preserve MORE.`;
+
+
+// 끝 장면(마지막 프레임) 전환 — 시작→끝 이미지
+const VID_END_RULE =
+`END-FRAME TRANSITION: a second image is provided as the FINAL frame. Animate a slow, seamless transition FROM the first (start) image TO the second (end) image. Both images are the same character in the same style, lighting and setting — treat them as two moments of one continuous shot. Interpolate gently and naturally between the two: the pose, expression and gaze ease smoothly from the start image into the exact expression and pose of the end image, arriving precisely on the end image at the last frame and holding it. Preserve the identical face, hairstyle, costume, colors, lighting and art style of BOTH images throughout — the only thing that changes is the gradual, subtle transition of pose/expression between them. No morphing artifacts, no distortion, no style change, no camera movement.`;
+const VID_END = {
+  "표정만 천천히 변화":"only the expression and gaze slowly shift from the start image to the end image, the pose and body staying otherwise still",
+  "고개 돌려 끝 장면으로":"the head turns slowly and gently to arrive at the exact angle and expression of the end image",
+  "눈 감았다 뜨며 전환":"the eyes slowly close and reopen, and as they reopen the face has eased into the end image's expression",
+  "고개 숙이며 끝 장면으로":"the head lowers slowly to settle into the end image's downward pose and expression",
+  "미소 번지며 끝 장면으로":"a slow smile gradually forms, the face easing into the end image's smiling expression"
+};
+const VID_KO_END_RULE =
+`끝 프레임 전환: 두 번째 이미지가 마지막 프레임으로 제공됩니다. 첫 번째(시작) 이미지에서 두 번째(끝) 이미지로 천천히 매끄럽게 전환하는 모션을 만드세요. 두 이미지는 같은 화풍·조명·배경의 동일 인물이며, 하나의 연속된 장면의 두 순간으로 다루세요. 둘 사이를 부드럽고 자연스럽게 보간하여: 포즈·표정·시선이 시작 이미지에서 끝 이미지의 정확한 표정과 포즈로 매끄럽게 이어지고, 마지막 프레임에서 정확히 끝 이미지에 도달해 그 상태로 멈춥니다. 두 이미지의 동일한 얼굴·헤어·의상·색·조명·화풍을 처음부터 끝까지 유지 — 변하는 것은 오직 둘 사이 포즈/표정의 점진적이고 미세한 전환뿐. 모핑 아티팩트 없음, 왜곡 없음, 화풍 변경 없음, 카메라 이동 없음.`;
+const VID_KO_END = {
+  "표정만 천천히 변화":"표정과 시선만 시작 이미지에서 끝 이미지로 천천히 변하고, 포즈와 몸은 그 외에는 정지",
+  "고개 돌려 끝 장면으로":"고개가 천천히 부드럽게 돌아가 끝 이미지의 정확한 각도와 표정에 도달",
+  "눈 감았다 뜨며 전환":"눈을 천천히 감았다 다시 뜨고, 뜨는 순간 얼굴이 끝 이미지의 표정으로 이어져 있음",
+  "고개 숙이며 끝 장면으로":"고개가 천천히 내려가 끝 이미지의 숙인 포즈와 표정으로 자리잡음",
+  "미소 번지며 끝 장면으로":"천천히 미소가 번지며 얼굴이 끝 이미지의 미소 짓는 표정으로 이어짐"
+};
 
 const VID_SUBJECT = {
   "호흡 (기본)":"the chest and shoulders rise and fall with slow, shallow breathing",
@@ -1009,10 +1046,17 @@ const VID_LOOP = {
 
 // 한국어 대역
 const VID_KO_RULE =
-`제공된 이미지를 애니메이션화하세요. 이것은 이미지→영상 모션 작업이며 재생성이 아닙니다 — 어떤 것도 다시 그리거나, 화풍을 바꾸거나, 재해석하지 마세요.
-반드시 그대로 유지(핵심): 원본 그림의 화풍, 선화, 플랫 셀 채색, 색 팔레트, 조명과 그림자 형태, 인물의 얼굴과 이목구비, 헤어스타일, 의상, 장신구, 배경과 구도를 100% 동일하게 유지. 모든 프레임이 같은 일러스트로 보여야 하며 오직 움직임만 있어야 함. 화풍 변형 없음, 재렌더링 없음, 클립 전체에서 밝기·대비·색조 변화 없음.
+`제공된 이미지를 애니메이션화하세요. 이것은 이미지→영상 모션 작업이며 재생성이 아닙니다 — 업로드된 이미지가 유일한 기준이자 완성된 원본이며 고정된 것으로 다뤄야 합니다. 다시 그리거나, 다시 칠하거나, 화풍을 바꾸거나, 재일러스트화하거나, 재해석하지 마세요.
+
+외형을 정확히 그대로 유지(최우선): 인물은 모든 프레임에서 동일 인물이어야 합니다. 얼굴을 100% 동일하게 — 같은 얼굴형, 턱선, 눈 모양과 크기, 눈 색, 눈썹, 코, 입술, 얼굴 비율. 정확히 같은 헤어스타일·머리 길이·머리 색·가르마. 정확히 같은 피부톤과 안색. 정확히 같은 의상 — 같은 디자인, 같은 색, 같은 카라/넥라인, 같은 문양, 같은 장신구와 목장식. 얼굴을 미화하거나, 갸름하게 만들거나, 나이 들이거나, 어려 보이게 하거나, "개선"하지 말 것; 인물의 정체성을 바꾸지 말 것, 일반적인 얼굴로 교체하지 말 것, 신체 비율을 바꾸지 말 것. 어떤 프레임이 원본 얼굴이나 의상에서 벗어나기 시작하면 즉시 원본에 맞게 되돌릴 것.
+
+조명과 색을 정확히 그대로 유지(최우선): 원본의 조명 세팅, 빛 방향, 그림자 형태, 전체적인 어둡고 따뜻한 촛불 톤을 클립 전체에서 변함없이 유지. 이미지를 밝히거나, 밝게 만들거나, 재노출하거나, "보정"하지 말 것; 새로운 광원·발광·블룸·림라이트·렌즈 플레어를 추가하지 말 것; 어떤 프레임에서도 밝기·대비·채도·화이트밸런스·색조를 올리거나 이동시키지 말 것. 인물은 원본과 같은 명도를 유지해야 하며 — 갑자기 더 밝거나, 하얗거나, 스포트라이트 받으면 안 됨. 불꽃과 기존 하이라이트는 원래 위치를 유지.
+
+화풍을 정확히 그대로 유지: 같은 플랫 셀 셰이딩 한국 웹툰 화풍, 같은 선명한 먹선, 같은 하드엣지 플랫 그림자 형태, 같은 배경과 구도. 화풍 변형 없음, 더 매끄럽거나 광택나거나 3D스럽거나 페인터리하게 재렌더링 없음, 텍스처·그레인·블러 추가 없음. 모든 프레임이 정확히 같은 일러스트로 보여야 하며 오직 부드럽게 움직일 뿐.
+
 카메라: 완전히 고정. 팬·틸트·줌·달리·푸시인·궤도·시차·핸드헬드 흔들림 전부 없음. 프레임은 절대 움직이지 않고, 이미지 안의 요소만 움직임.
-모션 품질: 극도로 느리고 미세하며 연속적으로 — 동작이라기보다 미세한 움직임. 모든 것이 부드럽게 감속하며, 갑작스럽거나 끊기는 움직임 없음, 빠른 제스처 없음. 인물은 처음부터 끝까지 같은 포즈와 같은 위치를 유지하며, 모션은 그 포즈 주변의 작은 변화일 뿐 새로운 포즈가 아님.`;
+
+모션 품질: 극도로 느리고 미세하며 연속적으로 — 동작이라기보다 미세한 움직임. 모든 것이 부드럽게 감속하며, 갑작스럽거나 끊기는 움직임 없음, 빠른 제스처 없음. 인물은 처음부터 끝까지 같은 포즈와 같은 위치를 유지하며, 모션은 그 포즈 주변의 작은 변화일 뿐 새로운 포즈가 아님. 애매하면 더 적게 움직이고 더 많이 보존할 것.`;
 
 const VID_KO_SUBJ = {
   "호흡 (기본)":"가슴과 어깨가 느리고 얕은 호흡에 따라 천천히 오르내림",
@@ -1067,17 +1111,20 @@ function resetVidRule(){
 function buildVid(){
   const g=id=>document.getElementById(id).value.trim();
   const rule=g('vidRuleBox'), subj=g('vidSubjBox'), amb=g('vidAmbBox'),
-        spd=g('vidSpeedBox'), loop=g('vidLoopBox');
+        end=g('vidEndBox'), spd=g('vidSpeedBox'), loop=g('vidLoopBox');
   const motion=[subj,amb].filter(Boolean).join(' ');
-  const parts=[rule, motion?('MOTION IN THIS SHOT: '+motion):'', spd, loop].filter(Boolean);
+  const endPart = end ? (VID_END_RULE+'\n'+end) : '';
+  const parts=[rule, motion?('MOTION IN THIS SHOT: '+motion):'', endPart, spd, loop].filter(Boolean);
   const merged=parts.join('\n');
   document.getElementById('vidOutput').textContent=merged;
   const words=merged.split(/\s+/).filter(Boolean).length;
   document.getElementById('vidStat').textContent=`${words} words · ${merged.length} chars`;
   // 한국어
   const koMotion=[toKoVid(subj,VID_SUBJECT,VID_KO_SUBJ), toKoVid(amb,VID_AMBIENT,VID_KO_AMB)].filter(Boolean).join(' ');
+  const koEnd = end ? (VID_KO_END_RULE+' '+toKoVid(end,VID_END,VID_KO_END)) : '';
   const koParts=[VID_KO_RULE,
     koMotion?('이번 컷의 움직임: '+koMotion):'',
+    koEnd,
     toKoVid(spd,VID_SPEED,VID_KO_SPEED), toKoVid(loop,VID_LOOP,VID_KO_LOOP), VID_KO_NEG];
   let ko=koParts.filter(Boolean).map(t=>t.replace(/\s*\n\s*/g,' ').trim()).join(' ');
   document.getElementById('vidKoOutput').textContent=ko.replace(/\s{2,}/g,' ').trim();
@@ -1105,9 +1152,10 @@ function initVid(){
   document.getElementById('vidRuleBox').value=VID_RULE_DEFAULT;
   buildChips('vidSubjChips',VID_SUBJECT,'vidSubjBox');
   buildChips('vidAmbChips',VID_AMBIENT,'vidAmbBox');
+  buildChips('vidEndChips',VID_END,'vidEndBox');
   buildChips('vidSpeedChips',VID_SPEED,'vidSpeedBox',"아주 느리게 ★기본",'__vspd');
   buildChips('vidLoopChips',VID_LOOP,'vidLoopBox',"매끄러운 루프 ★기본",'__vloop');
-  ['vidRuleBox','vidSubjBox','vidAmbBox','vidSpeedBox','vidLoopBox'].forEach(id=>
+  ['vidRuleBox','vidSubjBox','vidAmbBox','vidEndBox','vidSpeedBox','vidLoopBox'].forEach(id=>
     document.getElementById(id).addEventListener('input',buildVid));
   document.getElementById('vidKoView').addEventListener('change',e=>{
     const on=e.target.checked;
